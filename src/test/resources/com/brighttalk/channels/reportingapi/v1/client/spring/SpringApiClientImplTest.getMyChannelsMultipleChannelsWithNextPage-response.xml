@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<channels>
+  <channel id="1">
+    <name>Channel name</name>
+    <strapline>Channel strapline/tagline</strapline>
+    <description>Channel description</description>
+    <url>https://www.brighttalk.com/channel/1</url>
+    <organisation>Owner’s organisation name</organisation>
+    <keywords>test,API,integration</keywords>
+    <type>enterprise</type>
+    <created>2010-11-08T08:18:23Z</created>
+    <lastUpdated>2010-11-08T08:18:23Z</lastUpdated>
+    <link rel="https://api.test.brighttalk.net/rel/surveys" href="https://api.test.brighttalk.net/v1/channel/1/surveys"/>
+    <link rel="https://api.test.brighttalk.net/rel/channel_subscribers" href="https://api.test.brighttalk.net/v1/channel/1/subscribers"/>
+    <link rel="https://api.test.brighttalk.net/rel/webcasts" href="https://api.test.brighttalk.net/v1/channel/1/webcasts"/> 
+  </channel>  
+  <channel id="2">
+    <name>Channel name</name>
+    <strapline>Channel strapline/tagline</strapline>
+    <description>Channel description</description>
+    <url>https://www.brighttalk.com/channel/2</url>
+    <organisation>Owner’s organisation name</organisation>
+    <keywords>test,API,integration</keywords>
+    <type>enterprise</type>
+    <created>2010-11-07T08:18:23Z</created>
+    <lastUpdated>2010-11-07T08:18:23Z</lastUpdated>
+    <link rel="https://api.test.brighttalk.net/rel/surveys" href="https://api.test.brighttalk.net/v1/channel/2/surveys"/>
+    <link rel="https://api.test.brighttalk.net/rel/channel_subscribers" href="https://api.test.brighttalk.net/v1/channel/2/subscribers"/>
+    <link rel="https://api.test.brighttalk.net/rel/webcasts" href="https://api.test.brighttalk.net/v1/channel/2/webcasts"/> 
+  </channel>
+  <link rel="next" href="https://api.test.brighttalk.net/v1/user/1/channels?cursor=1234&amp;pageSize=3"/>
+</channels>

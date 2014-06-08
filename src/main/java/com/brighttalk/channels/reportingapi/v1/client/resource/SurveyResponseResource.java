@@ -1,0 +1,148 @@
+/**
+ * ****************************************************************************
+ * Copyright BrightTALK Ltd, 2014.
+ * All Rights Reserved.
+ * $Id:$
+ * ****************************************************************************
+ */
+package com.brighttalk.channels.reportingapi.v1.client.resource;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.google.common.base.Objects;
+
+/**
+ * A BrightTALK user's response to a Survey.
+ */
+@XmlRootElement(name = "surveyResponse")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SurveyResponseResource {
+  @XmlAttribute
+  private final int id;
+  private final User user;
+  private final List<SurveyQuestionAnswers> questionAnswers;
+  private final Date created;
+  private final Date lastUpdated;
+  private final List<Link> links;
+  
+  public SurveyResponseResource(int id, User user, List<SurveyQuestionAnswers> questionAnswers, Date created,
+      Date lastUpdated, List<Link> links) {
+    this.id = id;
+    this.user = user;
+    this.questionAnswers = questionAnswers;
+    this.created = created;
+    this.lastUpdated = lastUpdated;
+    this.links = links;
+  }
+
+  public final int getId() {
+    return this.id;
+  }
+
+  public final User getUser() {
+    return this.user;
+  }
+
+  public final List<SurveyQuestionAnswers> getQuestionAnswers() {
+    return this.questionAnswers != null ? this.questionAnswers : new ArrayList<SurveyQuestionAnswers>();
+  }
+
+  public final Date getCreated() {
+    return this.created;
+  }
+
+  public final Date getLastUpdated() {
+    return this.lastUpdated;
+  }
+
+  public final List<Link> getLinks() {
+    return this.links != null ? this.links : new ArrayList<Link>();
+  }
+  
+  @Override
+  public String toString() {
+    /* @formatter:off */    
+    return Objects.toStringHelper(this).omitNullValues()
+      .add("id", this.id)
+      .add("user", this.user)
+      .add("questionAnswers", this.questionAnswers)
+      .add("created", this.created)
+      .add("lastUpdated", this.lastUpdated)      
+      .add("links", this.links)      
+      .toString();
+    /* @formatter:on */    
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.created == null) ? 0 : this.created.hashCode());
+    result = prime * result + this.id;
+    result = prime * result + ((this.lastUpdated == null) ? 0 : this.lastUpdated.hashCode());
+    result = prime * result + ((this.links == null) ? 0 : this.links.hashCode());
+    result = prime * result + ((this.questionAnswers == null) ? 0 : this.questionAnswers.hashCode());
+    result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SurveyResponseResource other = (SurveyResponseResource) obj;
+    if (this.created == null) {
+      if (other.created != null) {
+        return false;
+      }
+    } else if (!this.created.equals(other.created)) {
+      return false;
+    }
+    if (this.id != other.id) {
+      return false;
+    }
+    if (this.lastUpdated == null) {
+      if (other.lastUpdated != null) {
+        return false;
+      }
+    } else if (!this.lastUpdated.equals(other.lastUpdated)) {
+      return false;
+    }
+    if (this.links == null) {
+      if (other.links != null) {
+        return false;
+      }
+    } else if (!this.links.equals(other.links)) {
+      return false;
+    }
+    if (this.questionAnswers == null) {
+      if (other.questionAnswers != null) {
+        return false;
+      }
+    } else if (!this.questionAnswers.equals(other.questionAnswers)) {
+      return false;
+    }
+    if (this.user == null) {
+      if (other.user != null) {
+        return false;
+      }
+    } else if (!this.user.equals(other.user)) {
+      return false;
+    }
+    return true;
+  }    
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<channels>
+  <channel id="3">
+    <name>Channel name</name>
+    <strapline>Channel strapline/tagline</strapline>
+    <description>Channel description</description>
+    <url>https://www.brighttalk.com/channel/1</url>
+    <organisation>Owner’s organisation name</organisation>
+    <keywords>test,API,integration</keywords>
+    <type>enterprise</type>
+    <created>2014-05-23T21:35:00Z</created>
+    <lastUpdated>2014-05-23T21:36:10Z</lastUpdated>
+    <link rel="https://api.test.brighttalk.net/rel/surveys" href="https://api.test.brighttalk.net/v1/channel/1/surveys"/>
+    <link rel="https://api.test.brighttalk.net/rel/channel_subscribers" href="https://api.test.brighttalk.net/v1/channel/1/subscribers"/>
+    <link rel="https://api.test.brighttalk.net/rel/webcasts" href="https://api.test.brighttalk.net/v1/channel/1/webcasts"/> 
+  </channel>  
+</channels>
