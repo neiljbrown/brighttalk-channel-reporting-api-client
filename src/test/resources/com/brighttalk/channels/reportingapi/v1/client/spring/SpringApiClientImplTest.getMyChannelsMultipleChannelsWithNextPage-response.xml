@@ -28,5 +28,5 @@
     <link rel="https://api.test.brighttalk.net/rel/channel_subscribers" href="https://api.test.brighttalk.net/v1/channel/2/subscribers"/>
     <link rel="https://api.test.brighttalk.net/rel/webcasts" href="https://api.test.brighttalk.net/v1/channel/2/webcasts"/> 
   </channel>
-  <link rel="next" href="https://api.test.brighttalk.net/v1/user/1/channels?cursor=1234&amp;pageSize=3"/>
+  <link rel="next" href="https://api.test.brighttalk.net/v1/user/1/channels?cursor=1234&amp;pageSize=2"/>
 </channels>

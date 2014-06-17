@@ -65,20 +65,25 @@ public class SpringApiClientImpl implements ApiClient {
     this.restTemplate = Preconditions.checkNotNull(restTemplate, "RestTemplate must be non-null.");
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public ChannelsResource getMyChannels(PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl, MyChannelsResource.RELATIVE_URI_TEMPLATE,
-        requestParams);
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
+  @Override
+  public ChannelsResource getUserChannels(int userId, PageCriteria pageCriteria) throws ApiClientException {
+    Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        ChannelsResource.USER_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class, userId);
+  }
+
+  /** {@inheritDoc} */
   @Override
   public ChannelSubscribersResource getChannelSubscribers(int channelId, Boolean subscribed, Date subscribedSince,
       Date unsubscribedSince, PageCriteria pageCriteria) throws ApiClientException {

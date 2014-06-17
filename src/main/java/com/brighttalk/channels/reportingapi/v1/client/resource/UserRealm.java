@@ -16,7 +16,11 @@ import com.google.common.base.Objects;
  */
 public class UserRealm {
   @XmlAttribute
-  private final int id;
+  private int id;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private UserRealm() {
+  }  
 
   public UserRealm(int id) {
     this.id = id;

@@ -10,8 +10,7 @@ package com.brighttalk.channels.reportingapi.v1.client;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
 
 /**
@@ -39,9 +38,10 @@ public class PagingRequestParamsBuilder {
     }
   }
 
-  // Multimap API uses flattened collection of key/value pairs, with multiple entries for multiple values with same key.
-  // Multimap.asMap() is used to convert this to a Map<String, Collection<String>> representation.
-  private ListMultimap<String, String> params = ArrayListMultimap.create();
+  // Multimap API uses flattened collection of key/value pairs, with multiple entries for multiple values with same key
+  // Multimap.asMap() is subsequently used to convert this to a Map<String, Collection<String>> representation.
+  // Use LinkedListMultimap to get reliable (insert) order for keys as well as values
+  private LinkedListMultimap<String, String> params = LinkedListMultimap.create();
 
   /**
    * Builds the request parameters from the paging data contained in the supplied {@link PageCriteria} object.
@@ -52,13 +52,13 @@ public class PagingRequestParamsBuilder {
     if (pageCriteria == null) {
       return;
     }
-    if (pageCriteria.getPageSize() != null) {
-      this.params.put(ParamName.PAGE_SIZE.getName(), pageCriteria.getPageSize().toString());
-    }
     if (pageCriteria.getNextPageUrl() != null) {
       NextPageUrl nextPageUrl = NextPageUrl.parse(pageCriteria.getNextPageUrl());
       this.params.put(ParamName.CURSOR.getName(), nextPageUrl.getCursor());
     }
+    if (pageCriteria.getPageSize() != null) {
+      this.params.put(ParamName.PAGE_SIZE.getName(), pageCriteria.getPageSize().toString());
+    }    
   }
 
   /**

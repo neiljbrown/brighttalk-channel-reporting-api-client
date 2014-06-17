@@ -7,6 +7,8 @@
  */
 package com.brighttalk.channels.reportingapi.v1.client.resource;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import com.google.common.base.Objects;
@@ -14,22 +16,27 @@ import com.google.common.base.Objects;
 /**
  * The set of BrightTALK subscriber's registered user details which are accessible to a Channel owner.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class User {
   @XmlAttribute
-  private final int id;
-  private final String email;
-  private final UserRealm realm;
-  private final String realmUserId;
-  private final String firstName;
-  private final String lastName;
-  private final String phone;
-  private final String jobTitle;
-  private final String level;
-  private final String companyName;
-  private final String companySize;
-  private final String industry;
-  private final String country;
-  private final String stateProvince;
+  private int id;
+  private String email;
+  private UserRealm realm;
+  private String realmUserId;
+  private String firstName;
+  private String lastName;
+  private String phone;
+  private String jobTitle;
+  private String level;
+  private String companyName;
+  private String companySize;
+  private String industry;
+  private String country;
+  private String stateProvince;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private User() {
+  }    
   
   public User(int id, String email, UserRealm realm, String realmUserId, String firstName, String lastName,
       String phone, String jobTitle, String level, String companyName, String companySize, String industry,

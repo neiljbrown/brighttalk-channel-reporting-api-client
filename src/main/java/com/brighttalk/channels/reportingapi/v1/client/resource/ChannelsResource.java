@@ -27,6 +27,18 @@ public class ChannelsResource {
   private List<ChannelResource> channels;
   @XmlElementRef
   private List<Link> links;
+  
+  /** 
+   * URI template string for the relative URL of the current API user's Channels resource - the collection of channels 
+   * belonging to the current API user. 
+   */
+  public static final String MY_CHANNELS_RELATIVE_URI_TEMPLATE = "/v1/my/channels";  
+  
+  /** 
+   * URI template string for the relative URL of the User's Channels resource - the collection of channels belonging
+   * to an identified BrightTALK user. 
+   */
+  public static final String USER_CHANNELS_RELATIVE_URI_TEMPLATE = "/v1/user/{userId}/channels";  
 
   // Private, as only exists only to keep JAXB implementation happy. 
   private ChannelsResource() {

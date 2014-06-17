@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<channelSubscribers>
+  <channelSubscriber id="3">
+    <lastSubscribed>2014-06-11T19:50:09Z</lastSubscribed>
+    <unsubscribed>2014-06-11T19:50:09Z</unsubscribed>
+    <embed>
+      <url>https://www.test.brighttalk.net/webcast/1/123</url>
+      <track>track-etta</track>
+    </embed>
+    <user id="1">
+      <email>eplace@test.brightallk.net</email>
+      <realm id="4"/>
+      <realmUserId>eplace</realmUserId>
+      <firstName>Etta</firstName>
+      <lastName>Place</lastName>
+      <phone>0017302846901</phone>
+      <jobTitle>schoolteacher</jobTitle>
+      <level>Other</level>
+      <companyName>ABC High School</companyName>
+      <companySize>11-100</companySize>
+      <industry>Education</industry>
+      <country>United States</country>
+      <stateProvince>Texas</stateProvince>
+    </user>
+    <link rel="self" href="https://api.test.brighttalk.net/v1/channel_subscriber/3"/>
+  </channelSubscriber>
+  <channelSubscriber id="2">
+    <lastSubscribed>2013-05-10T18:49:08Z</lastSubscribed>
+    <embed>
+      <url>https://www.test.brighttalk.net/webcast/1/321</url>
+      <track>track-harry</track>
+    </embed>
+    <user id="5">
+      <email>hlongabaugh@test.brightallk.net</email>
+      <firstName>Harry</firstName>
+      <lastName>Longabaugh</lastName>
+      <phone>0017302846902</phone>
+      <jobTitle>Farmer</jobTitle>
+      <level>Manager/Team lead</level>
+      <companyName>Sundance Enterprises</companyName>
+      <companySize>101-250</companySize>
+      <industry>Agriculture &amp; Agribusiness</industry>
+      <country>Bolivia</country>
+    </user>
+    <link rel="self" href="https://api.test.brighttalk.net/v1/channel_subscriber/2"/>
+  </channelSubscriber>  
+  <link rel="next" href="https://api.test.brighttalk.net/v1/channel/1/subscribers?cursor=1234&amp;pageSize=2"/>
+</channelSubscribers>

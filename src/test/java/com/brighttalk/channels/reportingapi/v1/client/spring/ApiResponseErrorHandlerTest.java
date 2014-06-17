@@ -122,10 +122,10 @@ public class ApiResponseErrorHandlerTest {
   public void testHandleErrorWhenResponseBodyContainsApiError() throws Exception {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(MediaType.APPLICATION_XML);
-    String apiErrorCode = new String("InvalidChannelId");
-    String apiErrorMessage = new String("Invalid channel id [foo].");
-    String apiErrorXml = new String("<?xml version='1.0' encoding='UTF-8'?><error><code>" + apiErrorCode
-        + "</code><message>" + apiErrorMessage + "</message></error>");    
+    String apiErrorCode = "InvalidChannelId";
+    String apiErrorMessage = "Invalid channel id [foo].";
+    String apiErrorXml = "<?xml version='1.0' encoding='UTF-8'?><error><code>" + apiErrorCode
+        + "</code><message>" + apiErrorMessage + "</message></error>";    
     ClientHttpResponse response = this.createMockClientHttpResponse(HttpStatus.BAD_REQUEST, httpHeaders, apiErrorXml);
     EasyMock.replay(response);
 

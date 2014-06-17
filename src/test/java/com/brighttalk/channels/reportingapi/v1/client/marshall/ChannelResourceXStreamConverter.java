@@ -82,8 +82,8 @@ public class ChannelResourceXStreamConverter implements Converter {
       reader.moveUp();
     }
     ApiDateTimeFormatter dateTimeFormatter = new ApiDateTimeFormatter();
-    Date lastUpdatedDate = created != null ? dateTimeFormatter.parse(lastUpdated) : null;
-    Date createdDate = lastUpdated != null ? dateTimeFormatter.parse(created) : null;
+    Date createdDate = created != null ? dateTimeFormatter.parse(created) : null;
+    Date lastUpdatedDate = lastUpdated != null ? dateTimeFormatter.parse(lastUpdated) : null;
     return new ChannelResource(id, name, strapline, description, url, organisation, keywords, type, createdDate,
         lastUpdatedDate, resourceLinks);
   }

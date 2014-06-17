@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -26,7 +27,9 @@ public class ChannelSubscribersResource {
   /** URI template string for the relative URL of this API resource. @see http://tools.ietf.org/html/rfc6570 */
   public static final String RELATIVE_URI_TEMPLATE = "/v1/channel/{channelId}/subscribers";
   
+  @XmlElementRef
   private List<ChannelSubscriberResource> channelSubscribers = new ArrayList<>();
+  @XmlElementRef
   private List<Link> links = new ArrayList<>();
   
   // Private, as only exists only to keep JAXB implementation happy.

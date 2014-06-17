@@ -7,14 +7,22 @@
  */
 package com.brighttalk.channels.reportingapi.v1.client.resource;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
 import com.google.common.base.Objects;
 
 /**
  * Details supplied via the embed of a BrightTALK player in its hosting web-page. 
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Embed {
-  private final String url;
-  private final String track;
+  private String url;
+  private String track;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private Embed() {
+  }    
   
   public Embed(String url, String track) {
     this.url = url;

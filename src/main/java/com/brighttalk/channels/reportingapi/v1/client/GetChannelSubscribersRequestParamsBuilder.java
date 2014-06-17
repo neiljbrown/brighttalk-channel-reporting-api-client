@@ -11,8 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
 
 /**
@@ -35,12 +34,12 @@ public class GetChannelSubscribersRequestParamsBuilder {
       return this.name;
     }
   }
-
   /* CHECKSTYLE:ON */
 
   // Multimap API uses flattened collection of key/value pairs, with multiple entries for multiple values with same key
-  // Multimap.asMap() is used to convert this to a Map<String, Collection<String>> representation.
-  private ListMultimap<String, String> params = ArrayListMultimap.create();
+  // Multimap.asMap() is subsequently used to convert this to a Map<String, Collection<String>> representation.
+  // Use LinkedListMultimap to get reliable (insert) order for keys as well as values  
+  private LinkedListMultimap<String, String> params = LinkedListMultimap.create();
 
   private ApiDateTimeFormatter dateFormat = new ApiDateTimeFormatter();
 
