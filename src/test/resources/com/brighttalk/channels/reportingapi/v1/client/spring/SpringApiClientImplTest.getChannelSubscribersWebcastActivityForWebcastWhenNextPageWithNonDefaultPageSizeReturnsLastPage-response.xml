@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<subscribersWebcastActivity>
+  <subscriberWebcastActivity id="4">
+    <webcast id="2" />
+    <user id="3">
+      <email>bcassidy@test.brightallk.net</email>
+      <firstName>Butch</firstName>
+      <lastName>Cassidy</lastName>
+      <phone>0018201946903</phone>
+      <jobTitle>Finance Expert</jobTitle>
+      <level>C-Level/Executive</level>
+      <companyName>Hole in the Wall Inc.</companyName>
+      <companySize>101-250</companySize>
+      <industry>Financial Services - Banking &amp; Securities</industry>
+      <country>United States</country>
+      <country>California</country>      
+    </user>    
+    <preregistered>true</preregistered>
+    <totalViewings>1</totalViewings>
+    <totalViewingDuration>300</totalViewingDuration>
+    <liveViewings>0</liveViewings>
+    <liveViewingDuration>0</liveViewingDuration>
+    <recordedViewings>1</recordedViewings>
+    <recordedViewingDuration>300</recordedViewingDuration>
+    <surveyResponse id="8425"/>
+    <created>2014-06-24T09:52:23Z</created>
+    <lastUpdated>2014-06-26T22:12:01Z</lastUpdated>
+    <link rel="https://api.brighttalk.com/rel/channel_subscriber" href="https://api.test.brighttalk.net/v1/channel_subscriber/1"/>
+    <link rel="https://api.brighttalk.com/rel/webcast” href=”https://api.test.brighttalk.net/v1/channel/1/webcast/2"/> 
+  </subscriberWebcastActivity>  
+</subscribersWebcastActivity>
