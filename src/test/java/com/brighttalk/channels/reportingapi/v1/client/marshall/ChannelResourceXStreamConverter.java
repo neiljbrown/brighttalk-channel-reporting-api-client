@@ -51,7 +51,7 @@ public class ChannelResourceXStreamConverter implements Converter {
     String type = null;
     String created = null;
     String lastUpdated = null;
-    List<Link> resourceLinks = new ArrayList<>();
+    List<Link> links = null;
     while (reader.hasMoreChildren()) {
       reader.moveDown();
       String nodeName = reader.getNodeName();
@@ -74,10 +74,13 @@ public class ChannelResourceXStreamConverter implements Converter {
       } else if ("lastUpdated".equals(nodeName)) {
         lastUpdated = reader.getValue();
       } else if ("link".equals(nodeName)) {
+        if (links == null) {
+          links = new ArrayList<>();          
+        }
         // Passing null to UnmarshallingContext.convertAnother() as ChannelResource is immutable so don't have a 
         // current object. XStream permits this.
         Link resourceLink = (Link) context.convertAnother(null, Link.class);
-        resourceLinks.add(resourceLink);
+        links.add(resourceLink);
       }
       reader.moveUp();
     }
@@ -85,6 +88,6 @@ public class ChannelResourceXStreamConverter implements Converter {
     Date createdDate = created != null ? dateTimeFormatter.parse(created) : null;
     Date lastUpdatedDate = lastUpdated != null ? dateTimeFormatter.parse(lastUpdated) : null;
     return new ChannelResource(id, name, strapline, description, url, organisation, keywords, type, createdDate,
-        lastUpdatedDate, resourceLinks);
+        lastUpdatedDate, links);
   }
 }

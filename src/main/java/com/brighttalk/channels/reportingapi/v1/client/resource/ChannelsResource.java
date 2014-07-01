@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,7 +26,7 @@ import com.google.common.base.Objects;
 public class ChannelsResource {
   @XmlElementRef
   private List<ChannelResource> channels;
-  @XmlElementRef
+  @XmlElement(name = "link")
   private List<Link> links;
   
   /** 

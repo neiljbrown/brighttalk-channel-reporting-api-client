@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -31,6 +32,7 @@ public class WebcastRegistrationResource {
   private final Embed embed;
   private final Date created;
   private final Date lastUpdated;
+  @XmlElement(name = "link")
   private final List<Link> links;
   
   public WebcastRegistrationResource(int id, WebcastResource webcast, User user, Embed embed, Date created,

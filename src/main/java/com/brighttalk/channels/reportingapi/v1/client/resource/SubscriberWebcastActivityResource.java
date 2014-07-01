@@ -14,6 +14,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -35,11 +37,17 @@ public class SubscriberWebcastActivityResource {
   private int liveViewingDuration;
   private int recordedViewings;
   private int recordedViewingDuration;
+  @XmlElementRef
   private List<SurveyResponseResource> surveyResponses;
   private Date created;
   private Date lastUpdated;
+  @XmlElement(name = "link")  
   private List<Link> links;
 
+  // Private, as only exists only to keep JAXB implementation happy.
+  private SubscriberWebcastActivityResource() {
+  }  
+  
   public SubscriberWebcastActivityResource(int id, WebcastResource webcast, User user, boolean preregistered,
       int totalViewings, int totalViewingDuration, int liveViewings, int liveViewingDuration, int recordedViewings,
       int recordedViewingDuration, List<SurveyResponseResource> surveyResponses, Date created, Date lastUpdated,

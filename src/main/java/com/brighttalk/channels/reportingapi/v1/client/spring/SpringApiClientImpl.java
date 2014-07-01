@@ -20,11 +20,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.ApiClient;
 import com.brighttalk.channels.reportingapi.v1.client.ApiClientException;
 import com.brighttalk.channels.reportingapi.v1.client.GetChannelSubscribersRequestParamsBuilder;
+import com.brighttalk.channels.reportingapi.v1.client.GetSubscribersWebcastActivityRequestParamsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 import com.brighttalk.channels.reportingapi.v1.client.PagingRequestParamsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscribersResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.MyChannelsResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
 import com.google.common.base.Preconditions;
 
 /**
@@ -92,6 +94,29 @@ public class SpringApiClientImpl implements ApiClient {
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
         ChannelSubscribersResource.RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelSubscribersResource.class, channelId);
+  }
+    
+  /** {@inheritDoc} */
+  @Override
+  public SubscribersWebcastActivityResource getSubscribersWebcastActivityForChannel(int channelId, Date since,
+      Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
+    Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
+        expandChannelSurveyResponse, pageCriteria).asMap();
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE, requestParams);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public SubscribersWebcastActivityResource getSubscribersWebcastActivityForWebcast(int channelId, int webcastId,
+      Date since, Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
+    Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
+        expandChannelSurveyResponse, pageCriteria).asMap();
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId,
+        webcastId);
   }
 
   public final RestTemplate getRestTemplate() {

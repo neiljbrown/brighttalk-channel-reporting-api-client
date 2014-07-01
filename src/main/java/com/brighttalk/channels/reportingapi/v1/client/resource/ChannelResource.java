@@ -43,7 +43,7 @@ public class ChannelResource {
   private String type;
   private Date created;
   private Date lastUpdated;
-  @XmlElementRef
+  @XmlElement(name = "link")
   private List<Link> links;
 
   // Private, as only exists only to keep JAXB implementation happy.

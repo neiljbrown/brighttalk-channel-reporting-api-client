@@ -43,22 +43,25 @@ public class ChannelSubscribersResourceXStreamConverter implements Converter {
   /** {@inheritDoc} */
   @Override
   public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-    List<ChannelSubscriberResource> subscribers = new ArrayList<>();
-    List<Link> resourceLinks = new ArrayList<>();
+    List<ChannelSubscriberResource> subscribers = null;
+    List<Link> links = null;
     while (reader.hasMoreChildren()) {
       reader.moveDown();
       if ("channelSubscriber".equals(reader.getNodeName())) {
+        if (subscribers == null) {
+          subscribers = new ArrayList<>();
+        }
         ChannelSubscriberResource subscriber = (ChannelSubscriberResource) context.convertAnother(null, ChannelSubscriberResource.class);
         subscribers.add(subscriber);
       } else if ("link".equals(reader.getNodeName())) {
-        Link resourceLink = (Link) context.convertAnother(null, Link.class);
-        resourceLinks.add(resourceLink);
+        if (links == null) {
+          links = new ArrayList<>();
+        }
+        Link link = (Link) context.convertAnother(null, Link.class);
+        links.add(link);
       }
       reader.moveUp();
     }
-    if (subscribers.size() > 0) {
-      return new ChannelSubscribersResource(subscribers, resourceLinks);
-    }
-    return null;
+    return new ChannelSubscribersResource(subscribers, links);
   }
 }

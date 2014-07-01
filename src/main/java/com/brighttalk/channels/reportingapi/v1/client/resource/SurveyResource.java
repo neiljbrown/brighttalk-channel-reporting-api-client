@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -26,10 +27,11 @@ public class SurveyResource {
   @XmlAttribute
   private final int id;
   private final boolean active;
-  private final List<SurveyQuestion> questions;
+  private final List<Question> questions;
+  @XmlElement(name = "link")
   private final List<Link> links;
 
-  public SurveyResource(int id, boolean active, List<SurveyQuestion> questions, List<Link> links) {
+  public SurveyResource(int id, boolean active, List<Question> questions, List<Link> links) {
     this.id = id;
     this.active = active;
     this.questions = questions;
@@ -44,8 +46,8 @@ public class SurveyResource {
     return this.active;
   }
 
-  public final List<SurveyQuestion> getQuestions() {
-    return this.questions != null ? this.questions : new ArrayList<SurveyQuestion>();
+  public final List<Question> getQuestions() {
+    return this.questions != null ? this.questions : new ArrayList<Question>();
   }
 
   public final List<Link> getLinks() {

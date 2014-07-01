@@ -12,6 +12,8 @@ import java.util.Date;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscribersResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 
 /**
  * A client for accessing the BrightTALK channel owner reporting API (version 1.x).
@@ -59,4 +61,36 @@ public interface ApiClient {
    */
   ChannelSubscribersResource getChannelSubscribers(int channelId, Boolean subscribed, Date subscribedSince,
       Date unsubscribedSince, PageCriteria pageCriteria) throws ApiClientException;
+    
+  /**
+   * Retrieves a summary (aggregation) of per subscriber activity for webcasts in one of the channel owner's channels.
+   * 
+   * @param channelId The ID of the channel.
+   * @param since Optionally filters the results to include only those Subscriber Webcast Activity (created or) updated
+   * after (exclusive) the specified UTC date / time.
+   * @param expandChannelSurveyResponse Optionally expands every child Subscriber Webcast Activity to include the 
+   * subscriber’s response to the channel’s survey, if there is one. Defaults to {@code false}. 
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.
+   * @return A {@link SubscribersWebcastActivityResource} containing a collection of zero or more activities.
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  SubscribersWebcastActivityResource getSubscribersWebcastActivityForChannel(int channelId, Date since,
+      Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException;  
+
+  /**
+   * Retrieves a summary (aggregation) of per subscriber activity for a specific webcast in one of the channel 
+   * owner's channels.
+   * 
+   * @param channelId The ID of the channel.
+   * @param webcastId The ID of the webcast.
+   * @param since Optionally filters the results to include only those Subscriber Webcast Activity (created or) updated
+   * after (exclusive) the specified UTC date / time.
+   * @param expandChannelSurveyResponse Optionally expands every child Subscriber Webcast Activity to include the 
+   * subscriber’s response to the channel’s survey, if there is one. Defaults to {@code false}. 
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.
+   * @return A {@link SubscribersWebcastActivityResource} containing a collection of zero or more activities.
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  SubscribersWebcastActivityResource getSubscribersWebcastActivityForWebcast(int channelId, int webcastId, Date since,
+      Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException;  
 }

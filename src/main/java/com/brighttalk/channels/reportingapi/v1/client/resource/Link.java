@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
 
@@ -24,7 +23,6 @@ import com.google.common.base.Objects;
  * Modelled on the link element used in HTML and Atom (but without the namespace) microformats. Comprises mandatory
  * properties for the target URL ('href') and relation type ('rel').
  */
-@XmlRootElement(name = "link")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class Link {

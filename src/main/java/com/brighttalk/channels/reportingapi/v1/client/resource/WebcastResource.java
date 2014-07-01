@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -25,23 +26,32 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastResource {
   @XmlAttribute
-  private final int id;
-  private final String title;
-  private final String description;
-  private final String presenter;
-  private final int duration;
-  private final Date start;
-  private final String keywords;
-  private final boolean published;
-  private final String visibility;
-  private final String clientBookingRef;
-  private final String url;
-  private final List<String> categories;
-  private final String status;
-  private final String syndicationType;
-  private final Date created;
-  private final Date lastUpdated;
-  private final List<Link> links;
+  private int id;
+  private String title;
+  private String description;
+  private String presenter;
+  private int duration;
+  private Date start;
+  private String keywords;
+  private boolean published;
+  private String visibility;
+  private String clientBookingRef;
+  private String url;
+  private List<String> categories;
+  private String status;
+  private String syndicationType;
+  private Date created;
+  private Date lastUpdated;
+  @XmlElement(name = "link")
+  private List<Link> links;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private WebcastResource() {
+  }  
+  
+  public WebcastResource(int id) {
+    this.id = id;
+  }
   
   public WebcastResource(int id, String title, String description, String presenter, int duration, Date start,
       String keywords, boolean published, String visibility, String clientBookingRef, String url,

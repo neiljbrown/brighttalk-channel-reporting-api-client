@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -23,6 +24,7 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastsResource {
   private final List<WebcastResource> webcasts;
+  @XmlElement(name = "link")
   private final List<Link> links;
 
   public WebcastsResource(List<WebcastResource> webcasts, List<Link> links) {

@@ -48,6 +48,10 @@ import com.brighttalk.channels.reportingapi.v1.client.marshall.ChannelSubscriber
 import com.brighttalk.channels.reportingapi.v1.client.marshall.ChannelsResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.EmbedXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.LinkXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.QuestionXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscriberWebcastActivityResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscribersWebcastActivityResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponseResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.UserXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ApiError;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
@@ -56,6 +60,10 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscriber
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Embed;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Link;
+import com.brighttalk.channels.reportingapi.v1.client.resource.Question;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SubscriberWebcastActivityResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
 import com.thoughtworks.xstream.XStream;
 
@@ -404,7 +412,7 @@ public class SpringApiClientImplTest {
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
-    ChannelSubscribersResource subscribersResource = this.apiClient.getChannelSubscribers(channelId, null, null, 
+    ChannelSubscribersResource subscribersResource = this.apiClient.getChannelSubscribers(channelId, null, null,
         unsubscribedSinceDate, pageCriteria);
 
     this.mockReportingApiService.verify();
@@ -448,6 +456,211 @@ public class SpringApiClientImplTest {
 
     this.mockReportingApiService.verify();
   }
+
+  /**
+   * Test {@link SpringApiClientImpl#getSubscribersWebcastActivityForWebcast} in the case where there is no activity for
+   * the identified webcast.
+   */
+  @Test
+  public void getSubscribersWebcastActivityForWebcastWhenZeroActivity() {
+    int channelId = 1;
+    int webcastId = 2;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess("<subscribersWebcastActivity/>", MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
+        channelId, webcastId, null, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(subscribersWebcastActivityResource, notNullValue());
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities(), hasSize(0));
+    assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSubscribersWebcastActivityForWebcast} when the first page of returned resources
+   * contains multiple Subscriber Webcast Activity, and the total no. of activities is greater than the API page size,
+   * resulting in a 'next' page link.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getChannelSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage() throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
+        channelId, webcastId, null, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(subscribersWebcastActivityResource, notNullValue());
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities(), hasSize(2));
+
+    // Assert all fields in the first of the returned Resource
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+        0);
+    // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
+
+    // For the second of the two returned Resource just check its not the same as the first
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0).getId(),
+        not(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(1).getId()));
+
+    assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(1));
+    assertThat(subscribersWebcastActivityResource.getLinks().get(0),
+        is(expectedsubscribersWebcastActivityResource.getLinks().get(0)));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSubscribersWebcastActivityForWebcast} with paging criteria that includes a next
+   * page link and a non-default page size. The API responds with the final (last) page containing a single Subscriber
+   * Webcast Activity.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getChannelSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage()
+      throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    int pageSize = 200;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
+        channelId, webcastId, null, null, pageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(subscribersWebcastActivityResource, notNullValue());
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities(), hasSize(1));
+
+    // Assert all fields in the first of the returned Resource
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+        0);
+    // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
+
+    assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSubscribersWebcastActivityForWebcast} when a request is made for the next page
+   * of Subscriber Webcast Activity which have been created or updated since a specified date/time, and the Activity
+   * should be expanded to include the subscriber's channel survey response, if they have one.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse()
+      throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    String sinceString = "2014-06-28T21:24:59Z";
+    boolean expandChannelSurveyResponse = true;
+    Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
+        + "&expand=channelSurveyResponse&cursor=1234";
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
+        channelId, webcastId, sinceDate, expandChannelSurveyResponse, pageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(subscribersWebcastActivityResource, notNullValue());
+
+    // Assert all fields in the first of the returned Resource
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+        0);
+    // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
+
+    assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSubscribersWebcastActivityForChannel} when a request is made for the next page
+   * of Subscriber Webcast Activity which have been created or updated since a specified date/time, and the Activity
+   * should be expanded to include the subscriber's channel survey response, if they have one.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   * @see #getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse
+   */
+  @Test
+  public void getChannelSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse()
+      throws Exception {
+    int channelId = 1;
+    String sinceString = "2014-06-28T21:24:59Z";
+    boolean expandChannelSurveyResponse = true;
+    Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
+        + "&expand=channelSurveyResponse&cursor=1234";
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForChannel(
+        channelId, sinceDate, expandChannelSurveyResponse, pageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(subscribersWebcastActivityResource, notNullValue());
+
+    // Assert all fields in the first of the returned Resource
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+        0);
+    // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
+    assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
+
+    assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(0));
+  }
   
   /**
    * Creates and configures the {@link XStream} instance the test uses to unamrshall (deserialise) canned API response
@@ -455,21 +668,38 @@ public class SpringApiClientImplTest {
    */
   private void initXStream() {
     this.xstream = new XStream();
+
     this.xstream.alias("channels", ChannelsResource.class);
-    this.xstream.alias("channel", ChannelResource.class);
-    this.xstream.alias("link", Link.class);
     this.xstream.registerConverter(new ChannelsResourceXStreamConverter());
+
+    this.xstream.alias("channel", ChannelResource.class);
     this.xstream.registerConverter(new ChannelResourceXStreamConverter());
+
+    this.xstream.alias("link", Link.class);
     this.xstream.registerConverter(new LinkXStreamConverter());
 
     this.xstream.alias("channelSubscribers", ChannelSubscribersResource.class);
-    this.xstream.alias("channelSubscriber", ChannelSubscriberResource.class);
-    this.xstream.alias("embed", Embed.class);
-    this.xstream.alias("user", User.class);
     this.xstream.registerConverter(new ChannelSubscribersResourceXStreamConverter());
+
+    this.xstream.alias("channelSubscriber", ChannelSubscriberResource.class);
     this.xstream.registerConverter(new ChannelSubscriberResourceXStreamConverter());
+
+    this.xstream.alias("embed", Embed.class);
     this.xstream.registerConverter(new EmbedXStreamConverter());
+
+    this.xstream.alias("user", User.class);
     this.xstream.registerConverter(new UserXStreamConverter());
 
+    this.xstream.alias("subscribersWebcastActivity", SubscribersWebcastActivityResource.class);
+    this.xstream.registerConverter(new SubscribersWebcastActivityResourceXStreamConverter());
+
+    this.xstream.alias("subscriberWebcastActivity", SubscriberWebcastActivityResource.class);
+    this.xstream.registerConverter(new SubscriberWebcastActivityResourceXStreamConverter());
+
+    this.xstream.alias("surveyResponse", SurveyResponseResource.class);
+    this.xstream.registerConverter(new SurveyResponseResourceXStreamConverter());
+
+    this.xstream.alias("question", Question.class);
+    this.xstream.registerConverter(new QuestionXStreamConverter());
   }
 }

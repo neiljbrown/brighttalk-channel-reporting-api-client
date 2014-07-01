@@ -49,7 +49,7 @@ public class ChannelSubscriberResourceXStreamConverter implements Converter {
     String unsubscribed = null;
     Embed embed = null;
     User user = null;
-    List<Link> resourceLinks = new ArrayList<>();
+    List<Link> links = null;
     while (reader.hasMoreChildren()) {
       reader.moveDown();
       String nodeName = reader.getNodeName();
@@ -62,14 +62,17 @@ public class ChannelSubscriberResourceXStreamConverter implements Converter {
       } else if ("user".equals(nodeName)) {
         user = (User) context.convertAnother(null, User.class);
       } else if ("link".equals(nodeName)) {
+        if (links == null) {
+          links = new ArrayList<>();
+        }
         Link resourceLink = (Link) context.convertAnother(null, Link.class);
-        resourceLinks.add(resourceLink);
+        links.add(resourceLink);
       }
       reader.moveUp();
     }
     ApiDateTimeFormatter dateTimeFormatter = new ApiDateTimeFormatter();
     Date lastSubscribedDate = lastSubscribed != null ? dateTimeFormatter.parse(lastSubscribed) : null;
     Date unsubscribedDate = unsubscribed != null ? dateTimeFormatter.parse(unsubscribed) : null;
-    return new ChannelSubscriberResource(id, lastSubscribedDate, unsubscribedDate, embed, user, resourceLinks);
+    return new ChannelSubscriberResource(id, lastSubscribedDate, unsubscribedDate, embed, user, links);
   }
 }

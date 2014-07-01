@@ -14,6 +14,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -25,18 +28,25 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveyResponseResource {
   @XmlAttribute
-  private final int id;
-  private final User user;
-  private final List<SurveyQuestionAnswers> questionAnswers;
-  private final Date created;
-  private final Date lastUpdated;
-  private final List<Link> links;
-  
-  public SurveyResponseResource(int id, User user, List<SurveyQuestionAnswers> questionAnswers, Date created,
-      Date lastUpdated, List<Link> links) {
+  private int id;
+  private User user;
+  @XmlElementWrapper(name = "questions")
+  @XmlElement(name = "question")
+  private List<Question> questions;
+  private Date created;
+  private Date lastUpdated;
+  @XmlElement(name = "link")
+  private List<Link> links;
+
+  // Private, as only exists only to keep JAXB implementation happy.
+  private SurveyResponseResource() {
+  }
+
+  public SurveyResponseResource(int id, User user, List<Question> questions, Date created, Date lastUpdated,
+      List<Link> links) {
     this.id = id;
     this.user = user;
-    this.questionAnswers = questionAnswers;
+    this.questions = questions;
     this.created = created;
     this.lastUpdated = lastUpdated;
     this.links = links;
@@ -50,8 +60,8 @@ public class SurveyResponseResource {
     return this.user;
   }
 
-  public final List<SurveyQuestionAnswers> getQuestionAnswers() {
-    return this.questionAnswers != null ? this.questionAnswers : new ArrayList<SurveyQuestionAnswers>();
+  public final List<Question> getQuestions() {
+    return this.questions != null ? this.questions : new ArrayList<Question>();
   }
 
   public final Date getCreated() {
@@ -65,19 +75,19 @@ public class SurveyResponseResource {
   public final List<Link> getLinks() {
     return this.links != null ? this.links : new ArrayList<Link>();
   }
-  
+
   @Override
   public String toString() {
     /* @formatter:off */    
     return Objects.toStringHelper(this).omitNullValues()
       .add("id", this.id)
       .add("user", this.user)
-      .add("questionAnswers", this.questionAnswers)
+      .add("questions", this.questions)
       .add("created", this.created)
       .add("lastUpdated", this.lastUpdated)      
       .add("links", this.links)      
       .toString();
-    /* @formatter:on */    
+    /* @formatter:on */
   }
 
   @Override
@@ -88,7 +98,7 @@ public class SurveyResponseResource {
     result = prime * result + this.id;
     result = prime * result + ((this.lastUpdated == null) ? 0 : this.lastUpdated.hashCode());
     result = prime * result + ((this.links == null) ? 0 : this.links.hashCode());
-    result = prime * result + ((this.questionAnswers == null) ? 0 : this.questionAnswers.hashCode());
+    result = prime * result + ((this.questions == null) ? 0 : this.questions.hashCode());
     result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
     return result;
   }
@@ -129,11 +139,11 @@ public class SurveyResponseResource {
     } else if (!this.links.equals(other.links)) {
       return false;
     }
-    if (this.questionAnswers == null) {
-      if (other.questionAnswers != null) {
+    if (this.questions == null) {
+      if (other.questions != null) {
         return false;
       }
-    } else if (!this.questionAnswers.equals(other.questionAnswers)) {
+    } else if (!this.questions.equals(other.questions)) {
       return false;
     }
     if (this.user == null) {
@@ -144,5 +154,5 @@ public class SurveyResponseResource {
       return false;
     }
     return true;
-  }    
+  }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,7 +33,7 @@ public class ChannelSubscriberResource {
   private Date unsubscribed;
   private Embed embed;
   private User user;
-  @XmlElementRef
+  @XmlElement(name = "link")
   private List<Link> links = new ArrayList<>();
   
   // Private, as only exists only to keep JAXB implementation happy.
