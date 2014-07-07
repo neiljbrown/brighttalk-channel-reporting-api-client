@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -25,12 +26,21 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveyResource {
   @XmlAttribute
-  private final int id;
-  private final boolean active;
-  private final List<Question> questions;
+  private int id;
+  private boolean active;
+  @XmlElementWrapper(name = "questions")
+  @XmlElement(name = "question")  
+  private List<Question> questions;
   @XmlElement(name = "link")
-  private final List<Link> links;
+  private List<Link> links;
+  
+  /** URI template string for the relative URL of an individual, identified Survey resource. */
+  public static final String RELATIVE_URI_TEMPLATE = "/v1/survey/{surveyId}";  
 
+  // Private, as only exists only to keep JAXB implementation happy. 
+  private SurveyResource() {
+  }
+  
   public SurveyResource(int id, boolean active, List<Question> questions, List<Link> links) {
     this.id = id;
     this.active = active;

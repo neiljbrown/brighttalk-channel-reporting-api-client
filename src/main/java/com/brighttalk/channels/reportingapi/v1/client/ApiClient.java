@@ -92,5 +92,25 @@ public interface ApiClient {
    * @throws ApiClientException If an error occurs on making the API call.
    */
   SubscribersWebcastActivityResource getSubscribersWebcastActivityForWebcast(int channelId, int webcastId, Date since,
-      Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException;  
+      Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException;
+  
+  /**
+   * Retrieves the survey (definitions) for a channel owned by the current user. 
+   * <p>
+   * Supports a Channel owner obtaining a link for subsequently retrieving the responses to a channel survey.
+   * 
+   * @param channelId The ID of the channel.
+   * @return A {@link SurveysResource} containing a collection of zero or more {@link SurveyResource surveys}.
+   * @throws ApiClientException If an error occurs on making the API call.  
+   */
+  SurveysResource getSurveysForChannel(int channelId) throws ApiClientException;
+  
+  /**
+   * Retrieves an identified survey (definition) owned by the current user.
+   * 
+   * @param surveyId The ID of the survey.
+   * @return The {@link SurveyResource}.
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  SurveyResource getSurvey(int surveyId) throws ApiClientException;
 }

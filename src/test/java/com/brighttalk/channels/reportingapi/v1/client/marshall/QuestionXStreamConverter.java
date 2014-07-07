@@ -49,7 +49,9 @@ public class QuestionXStreamConverter implements Converter {
     while (reader.hasMoreChildren()) {
       reader.moveDown();
       String nodeName = reader.getNodeName();
-      if (nodeName.equals("options")) {
+      if (nodeName.equals("text")) {
+        text = reader.getValue();
+      } else if (nodeName.equals("options")) {
         if (options == null) {
           options = new ArrayList<>();
         }

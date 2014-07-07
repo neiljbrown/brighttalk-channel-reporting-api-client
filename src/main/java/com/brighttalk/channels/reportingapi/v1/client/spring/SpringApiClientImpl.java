@@ -27,6 +27,8 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscriber
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.MyChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.google.common.base.Preconditions;
 
 /**
@@ -95,7 +97,7 @@ public class SpringApiClientImpl implements ApiClient {
         ChannelSubscribersResource.RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelSubscribersResource.class, channelId);
   }
-    
+
   /** {@inheritDoc} */
   @Override
   public SubscribersWebcastActivityResource getSubscribersWebcastActivityForChannel(int channelId, Date since,
@@ -117,6 +119,22 @@ public class SpringApiClientImpl implements ApiClient {
         SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId,
         webcastId);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public SurveysResource getSurveysForChannel(int channelId) throws ApiClientException {
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE, null);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveysResource.class, channelId);
+  }
+    
+  /** {@inheritDoc} */
+  @Override
+  public SurveyResource getSurvey(int surveyId) throws ApiClientException {
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        SurveyResource.RELATIVE_URI_TEMPLATE, null);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResource.class, surveyId);
   }
 
   public final RestTemplate getRestTemplate() {
@@ -152,7 +170,7 @@ public class SpringApiClientImpl implements ApiClient {
    * 
    * @param baseUrl The {@link URL base URL}.
    * @param relativeUrlPath The relative path to be appended to the base URL.
-   * @param requestParams An optional, map representation of request parameters to be appended to the URL.
+   * @param requestParams An optional, map representation of request parameters to be appended to the URL. Can be null.
    * @return A String representation of the absolute URL. A return type of String rather than {@link java.net.URI} is
    * used to avoid encoding the URL before any template variables have been replaced.
    */

@@ -51,7 +51,9 @@ import com.brighttalk.channels.reportingapi.v1.client.marshall.LinkXStreamConver
 import com.brighttalk.channels.reportingapi.v1.client.marshall.QuestionXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscriberWebcastActivityResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscribersWebcastActivityResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponseResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveysResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.UserXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ApiError;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
@@ -63,7 +65,9 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.Link;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Question;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscriberWebcastActivityResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
 import com.thoughtworks.xstream.XStream;
 
@@ -661,7 +665,94 @@ public class SpringApiClientImplTest {
 
     assertThat(subscribersWebcastActivityResource.getLinks(), hasSize(0));
   }
-  
+
+  /**
+   * Test {@link SpringApiClientImpl#getSurveysForChannel} when the identified channel does not have a survey.
+   */
+  @Test
+  public void getSurveysForChannelWhenNoSurveyFound() {
+    int channelId = 1;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess("<surveys/>", MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveysResource surveysResource = this.apiClient.getSurveysForChannel(channelId);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveysResource, notNullValue());
+    assertThat(surveysResource.getSurveys(), hasSize(0));
+  }
+
+  /**
+   * Test {@link SpringApiClientImpl#getSurveysForChannel} when the identified channel has a single survey which
+   * comprises multiple questions of every supported type, some with multiple options.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getSurveysForChannelWhenSingleSurveyMultipleQuestionsOfEveryType() throws Exception {
+    int channelId = 1;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getSurveysForChannelWhenSingleSurveyMultipleQuestionsOfEveryType-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveysResource surveysResource = this.apiClient.getSurveysForChannel(channelId);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveysResource, notNullValue());
+    assertThat(surveysResource.getSurveys(), hasSize(1));
+
+    // Assert all fields in the first of the returned Resource
+    SurveysResource expectedSurveysResource = (SurveysResource) this.xstream.fromXML(responseBody.getInputStream());
+    SurveyResource expectedSurveyResource = expectedSurveysResource.getSurveys().get(0);
+    // Relies on overridden SurveyResource.equals() to test for equality by value
+    assertThat(surveysResource.getSurveys().get(0), is(expectedSurveyResource));
+  }
+
+  /**
+   * Test {@link SpringApiClientImpl#getSurveys} when the identified survey exists, is inactive, and comprises multiple
+   * questions of every supported type, some with multiple options.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType() throws Exception {
+    int surveyId = 281256;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + SurveyResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveyResource surveyResource = this.apiClient.getSurvey(surveyId);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveyResource, notNullValue());
+
+    // Assert all fields in the first of the returned Resource
+    SurveyResource expectedSurveyResource = (SurveyResource) this.xstream.fromXML(responseBody.getInputStream());
+    // Relies on overridden SurveyResource.equals() to test for equality by value
+    assertThat(surveyResource, is(expectedSurveyResource));
+  }
+
   /**
    * Creates and configures the {@link XStream} instance the test uses to unamrshall (deserialise) canned API response
    * payloads.
@@ -701,5 +792,11 @@ public class SpringApiClientImplTest {
 
     this.xstream.alias("question", Question.class);
     this.xstream.registerConverter(new QuestionXStreamConverter());
+
+    this.xstream.alias("surveys", SurveysResource.class);
+    this.xstream.registerConverter(new SurveysResourceXStreamConverter());
+
+    this.xstream.alias("survey", SurveyResource.class);
+    this.xstream.registerConverter(new SurveyResourceXStreamConverter());
   }
 }
