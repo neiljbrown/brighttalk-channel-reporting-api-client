@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<surveys>
+  <survey id="281256">
+    <active>true</active>
+    <questions>
+      <question id="3" reportingId="projPlanned"  type="select" required="true">
+        <text>Are you planning...</text>
+        <options>
+          <option>Yes</option>
+          <option>No</option>
+        </options>
+      </question>
+      <question id="1" reportingId="projDescription"  type="text">
+        <text>If yes, please...</text>    
+      </question>
+      <question id="2" reportingId="interests" type="select">
+        <text>Select one or more...</text>
+        <options>
+          <option>Fusion</option>
+          <option>Parallels</option>
+          <option>Zen</option>
+        </options>      
+      </question>
+      <question id="4" reportingId="freeTrial" type="checkbox" deleted="true">
+        <text>Tick to sign-up...</text>
+      </question>
+      <question id="5" reportingId="bookDemo" type="checkbox">
+        <text>Book a demo of the product.</text>
+      </question>      
+    </questions> 
+    <link rel="self" href="https://api.test.brighttalk.net/v1/survey/281256"/>
+    <link rel="https://api.brighttalk.com/rel/survey_responses" href="https://api.api.test.brighttalk.net/v1/survey/281256/responses"/>           
+  </survey>      
+</surveys>
