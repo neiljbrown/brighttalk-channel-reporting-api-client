@@ -53,6 +53,7 @@ import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscriberWebcast
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SubscribersWebcastActivityResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponseResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponsesResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveysResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.UserXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ApiError;
@@ -67,6 +68,7 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.SubscriberWebcast
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
 import com.thoughtworks.xstream.XStream;
@@ -121,7 +123,7 @@ public class SpringApiClientImplTest {
     String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
-    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    // Configure mock API service to respond to API call
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess("<channels/>", MediaType.APPLICATION_XML));
 
@@ -267,7 +269,7 @@ public class SpringApiClientImplTest {
         + ChannelsResource.USER_CHANNELS_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(userId).toString();
 
-    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    // Configure mock API service to respond to API call
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess("<channels/>", MediaType.APPLICATION_XML));
 
@@ -292,7 +294,7 @@ public class SpringApiClientImplTest {
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?subscribed=" + subscribed;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
-    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    // Configure mock API service to respond to API call
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess("<channelSubscribers/>", MediaType.APPLICATION_XML));
 
@@ -473,7 +475,7 @@ public class SpringApiClientImplTest {
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
-    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    // Configure mock API service to respond to API call
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess("<subscribersWebcastActivity/>", MediaType.APPLICATION_XML));
 
@@ -730,14 +732,13 @@ public class SpringApiClientImplTest {
    */
   @Test
   public void getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType() throws Exception {
-    int surveyId = 281256;
+    int surveyId = 1;
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + SurveyResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType-response.xml",
-        this.getClass());
+        "SpringApiClientImplTest.getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType-response.xml", this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -751,6 +752,106 @@ public class SpringApiClientImplTest {
     SurveyResource expectedSurveyResource = (SurveyResource) this.xstream.fromXML(responseBody.getInputStream());
     // Relies on overridden SurveyResource.equals() to test for equality by value
     assertThat(surveyResource, is(expectedSurveyResource));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSurveyResponses} when the request is for the first page of all the survey
+   * responses (no filter criteria is specified in the request), and no responses are found.
+   */
+  @Test
+  public void getSurveyResponsesWhenZeroResponses() {
+    int surveyId = 1;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SurveyResponsesResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
+
+    // Configure mock API service to respond to API call
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess("<surveyResponses/>", MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveyResponsesResource surveyResponsesResource = this.apiClient.getSurveyResponses(surveyId, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveyResponsesResource, notNullValue());
+    assertThat(surveyResponsesResource.getSurveyResponses(), hasSize(0));
+    assertThat(surveyResponsesResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSurveyResponses} for a survey with multiple questions, when there are responses
+   * for more than one user/subscriber with, in some cases, multiple answers to a question, and a next page link.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getSurveyResponsesWhenMultipleResponsesWithMultipleQuestionsAndAnswersAndNextPage() throws Exception {
+    int surveyId = 1;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SurveyResponsesResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getSurveyResponsesWhenMultipleResponsesWithMultipleQuestionsAndAnswersAndNextPage-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveyResponsesResource surveyResponsesResource = this.apiClient.getSurveyResponses(surveyId, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveyResponsesResource, notNullValue());
+    assertThat(surveyResponsesResource.getSurveyResponses(), hasSize(2));
+
+    // Assert all fields in the first of the returned Resource
+    SurveyResponsesResource expectedSurveyResponsesResource = (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
+    SurveyResponseResource expectedSurveyResponseResource = expectedSurveyResponsesResource.getSurveyResponses().get(0);
+    // Relies on overridden SurveyResponseResource.equals() to test for equality by value
+    assertThat(surveyResponsesResource.getSurveyResponses().get(0), is(expectedSurveyResponseResource));
+
+    assertThat(surveyResponsesResource.getLinks(), hasSize(1));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getSurveyResponses} when the request is for the next page of responses since a
+   * specified date/time, and the response is the last page containing a single response.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getSurveyResponsesWhenSinceAndNextPageWithLastPageSingleResponse() throws Exception {
+    int surveyId = 1;
+    String sinceString = "2014-06-28T21:24:59Z";
+    Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + SurveyResponsesResource.RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&cursor=1234";
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
+    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getSurveyResponsesWhenSinceAndNextPageWithLastPageSingleResponse-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveyResponsesResource surveyResponsesResource = this.apiClient.getSurveyResponses(surveyId, sinceDate,
+        pageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(surveyResponsesResource, notNullValue());
+    assertThat(surveyResponsesResource.getSurveyResponses(), hasSize(1));
+
+    // Assert all fields in the first of the returned Resource
+    SurveyResponsesResource expectedSurveyResponsesResource = (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
+    SurveyResponseResource expectedSurveyResponseResource = expectedSurveyResponsesResource.getSurveyResponses().get(0);
+    // Relies on overridden SurveyResponseResource.equals() to test for equality by value
+    assertThat(surveyResponsesResource.getSurveyResponses().get(0), is(expectedSurveyResponseResource));
+
+    assertThat(surveyResponsesResource.getLinks(), hasSize(0));
   }
 
   /**
@@ -798,5 +899,8 @@ public class SpringApiClientImplTest {
 
     this.xstream.alias("survey", SurveyResource.class);
     this.xstream.registerConverter(new SurveyResourceXStreamConverter());
+
+    this.xstream.alias("surveyResponses", SurveyResponsesResource.class);
+    this.xstream.registerConverter(new SurveyResponsesResourceXStreamConverter());
   }
 }

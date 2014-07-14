@@ -21,6 +21,7 @@ import com.brighttalk.channels.reportingapi.v1.client.ApiClient;
 import com.brighttalk.channels.reportingapi.v1.client.ApiClientException;
 import com.brighttalk.channels.reportingapi.v1.client.GetChannelSubscribersRequestParamsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.GetSubscribersWebcastActivityRequestParamsBuilder;
+import com.brighttalk.channels.reportingapi.v1.client.GetSurveyResponsesRequestParamsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 import com.brighttalk.channels.reportingapi.v1.client.PagingRequestParamsBuilder;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscribersResource;
@@ -28,6 +29,8 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.MyChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.google.common.base.Preconditions;
 
@@ -128,13 +131,23 @@ public class SpringApiClientImpl implements ApiClient {
         SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE, null);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SurveysResource.class, channelId);
   }
-    
+
   /** {@inheritDoc} */
   @Override
   public SurveyResource getSurvey(int surveyId) throws ApiClientException {
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
-        SurveyResource.RELATIVE_URI_TEMPLATE, null);
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl, SurveyResource.RELATIVE_URI_TEMPLATE,
+        null);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResource.class, surveyId);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public SurveyResponsesResource getSurveyResponses(int surveyId, Date since, PageCriteria pageCriteria)
+      throws ApiClientException {
+    Map<String, List<String>> requestParams = new GetSurveyResponsesRequestParamsBuilder(since, pageCriteria).asMap();    
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUrl,
+        SurveyResponsesResource.RELATIVE_URI_TEMPLATE, requestParams);
+    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResponsesResource.class, surveyId);
   }
 
   public final RestTemplate getRestTemplate() {

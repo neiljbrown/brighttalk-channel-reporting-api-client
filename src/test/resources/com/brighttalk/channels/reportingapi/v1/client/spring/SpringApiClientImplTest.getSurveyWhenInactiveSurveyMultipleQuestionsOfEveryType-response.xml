@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<survey id="281256">
+<survey id="1">
   <active>false</active>
   <questions>
     <question id="3" reportingId="projPlanned"  type="select" required="true">
@@ -27,6 +27,6 @@
       <text>Book a demo of the product.</text>
     </question>      
   </questions> 
-  <link rel="self" href="https://api.test.brighttalk.net/v1/survey/281256"/>
-  <link rel="https://api.brighttalk.com/rel/survey_responses" href="https://api.api.test.brighttalk.net/v1/survey/281256/responses"/>           
+  <link rel="self" href="https://api.test.brighttalk.net/v1/survey/1"/>
+  <link rel="https://api.brighttalk.com/rel/survey_responses" href="https://api.test.brighttalk.net/v1/survey/1/responses"/>           
 </survey>      

@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -23,9 +24,18 @@ import com.google.common.base.Objects;
 @XmlRootElement(name = "surveyResponses")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveyResponsesResource {
-  private final List<SurveyResponseResource> surveyResponses;
+  
+  /** URI template string for the relative URL of the SurveyResponses resource. */
+  public static final String RELATIVE_URI_TEMPLATE = "/v1/survey/{surveyId}/responses";
+  
+  @XmlElementRef
+  private List<SurveyResponseResource> surveyResponses;
   @XmlElement(name = "link")
-  private final List<Link> links;
+  private List<Link> links;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private SurveyResponsesResource() {
+  }  
   
   public SurveyResponsesResource(List<SurveyResponseResource> surveyResponses, List<Link> links) {
     this.surveyResponses = surveyResponses;

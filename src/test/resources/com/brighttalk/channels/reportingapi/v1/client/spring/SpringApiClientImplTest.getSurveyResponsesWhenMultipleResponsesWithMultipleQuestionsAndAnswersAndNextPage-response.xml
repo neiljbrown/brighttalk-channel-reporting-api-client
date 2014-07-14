@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<surveyResponses>
+  <surveyResponse id="3">
+    <survey id="1"/>
+    <user id="1">
+      <email>eplace@test.brightallk.net</email>
+      <realm id="4"/>
+      <realmUserId>eplace</realmUserId>
+      <firstName>Etta</firstName>
+      <lastName>Place</lastName>
+      <phone>0017302846901</phone>
+      <jobTitle>schoolteacher</jobTitle>
+      <level>Other</level>
+      <companyName>ABC High School</companyName>
+      <companySize>11-100</companySize>
+      <industry>Education</industry>
+      <country>United States</country>
+      <stateProvince>Texas</stateProvince>
+    </user>    
+    <questions>
+      <question id="3" reportingId="projPlanned">
+        <answers>
+          <answer>Yes</answer>
+        </answers>
+      </question>
+      <question id="1" reportingId="projDescription">
+        <answers>
+          <answer>Small in-house project.</answer>
+        </answers>    
+      </question>
+      <question id="2" reportingId="interests">
+        <answers>
+          <answer>Parallels</answer>
+          <answer>Zen</answer>
+        </answers>      
+      </question>
+      <!-- Answers to deleted questions are included. -->
+      <question id="4" reportingId="freeTrial">
+        <answers>
+          <answer>1</answer>
+        </answers>
+      </question>
+    </questions> 
+    <created>2010-11-08T08:18:23Z</created>
+    <lastUpdated>2010-11-08T08:18:23Z</lastUpdated>
+    <!-- Link to related Survey -->    
+    <link rel="https://api.brighttalk.com/rel/survey" href="https://api.test.brighttalk.net/v1/survey/1"/>
+    <!-- Link to the Subscriber that completed the survey. Optional - not present if survey was completed anonymously -->
+    <link rel="https://api.brighttalk.com/rel/channel_subscriber" title="respondent" href="https://api.test.brighttalk.net/v1/channel_subscriber/3"/>               
+  </surveyResponse> 
+  <surveyResponse id="2">
+    <survey id="1"/>
+    <user id="5">
+      <email>hlongabaugh@test.brightallk.net</email>
+      <firstName>Harry</firstName>
+      <lastName>Longabaugh</lastName>
+      <phone>0017302846902</phone>
+      <jobTitle>Farmer</jobTitle>
+      <level>Manager/Team lead</level>
+      <companyName>Sundance Enterprises</companyName>
+      <companySize>101-250</companySize>
+      <industry>Agriculture &amp; Agribusiness</industry>
+      <country>Bolivia</country>
+    </user>    
+    <questions>
+      <question id="3" reportingId="projPlanned">
+        <answers>
+          <answer>No</answer>
+        </answers>
+      </question>
+      <question id="1" reportingId="projDescription">
+        <answers>
+          <answer>Big multi-partner programme.</answer>
+        </answers>    
+      </question>
+      <question id="2" reportingId="interests">
+        <answers>
+          <answer>Budapest</answer>
+        </answers>      
+      </question>
+      <!-- Answers to deleted questions are included. -->
+      <question id="4" reportingId="freeTrial">
+        <answers>
+          <answer>0</answer>
+        </answers>
+      </question>
+    </questions> 
+    <created>2010-11-08T07:18:23Z</created>
+    <lastUpdated>2010-11-08T07:18:23Z</lastUpdated>
+    <!-- Link to related Survey -->    
+    <link rel="https://api.brighttalk.com/rel/survey" href="https://api.test.brighttalk.net/v1/survey/1"/>
+    <!-- Link to the Subscriber that completed the survey. Optional - not present if survey was completed anonymously -->
+    <link rel="https://api.brighttalk.com/rel/channel_subscriber" title="respondent" href="https://api.test.brighttalk.net/v1/channel_subscriber/2"/>               
+  </surveyResponse>      
+  <link rel="next" href="https://api.brighttalk.com/v1/survey/1/responses?cursor=1234&amp;pageSize=50"/>        
+</surveyResponses>
