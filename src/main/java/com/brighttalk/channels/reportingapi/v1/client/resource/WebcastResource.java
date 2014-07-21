@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -25,6 +26,10 @@ import com.google.common.base.Objects;
 @XmlRootElement(name = "webcast")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastResource {
+  
+  /** URI template string for the relative URL of a Webcast */
+  public static final String RELATIVE_URI_TEMPLATE = "/v1/channel/{channelId}/webcast/{webcastId}";
+
   @XmlAttribute
   private int id;
   private String title;
@@ -37,6 +42,8 @@ public class WebcastResource {
   private String visibility;
   private String clientBookingRef;
   private String url;
+  @XmlElementWrapper(name = "categories")  
+  @XmlElement(name = "category")  
   private List<String> categories;
   private String status;
   private String syndicationType;

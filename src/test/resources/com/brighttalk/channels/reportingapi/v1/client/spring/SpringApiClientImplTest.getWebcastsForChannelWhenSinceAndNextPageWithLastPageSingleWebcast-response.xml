@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<webcasts>
+  <webcast id="78357">
+    <title>2 Minutes on BrightTALK: Media is Responsible for Listening</title>
+    <description>&quot;The media company of today has to be as much of a listener as a publisher.&quot; In 2004, C Presenter became the first journalist to leave a major newspaper, the Financial Times, to make a living as a full-time journalist blogger. Join C as he discusses how online community listening is a competitive advantage.</description>
+    <presenter>C Presenter, Pulisher, Silicon Valley Watcher</presenter>
+    <duration>142</duration>
+    <start>2013-06-11T15:25:00Z</start>
+    <keywords>&quot;Social Listening&quot;, &quot;Content Publishing&quot;</keywords>
+    <published>true</published>
+    <visibility>public</visibility>
+    <clientBookingRef>campaign-ref-2013-08-05-2</clientBookingRef>
+    <status>recorded</status>
+    <syndicationType>in</syndicationType>
+    <created>2013-06-11T16:47:15Z</created>
+    <lastUpdated>2013-08-04T10:19:43Z</lastUpdated>
+    <link rel="self" href="https://api.test.brighttalk.net/v1/channel/1/webcast/78357"/>
+    <link rel="https://api.brighttalk.com/rel/webcast_registrations" href="https://api.test.brighttalk.net/v1/channel/1/webcast/78357/registrations"/>
+    <link rel="https://api.brighttalk.com/rel/webcast_viewings" href="https://api.test.brighttalk.net/v1/channel/1/webcast/78357/viewings"/>
+    <link rel="https://api.brighttalk.com/rel/subscribers_webcast_activity" href="https://api.test.brighttalk.net/v1/channel/1/webcast/78357/subscribers_webcast_activity"/>
+  </webcast>  
+</webcasts>

@@ -13,9 +13,9 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelSubscriber
 import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
-import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
 
 /**
  * A client for accessing the BrightTALK channel owner reporting API (version 1.x).
@@ -116,17 +116,31 @@ public interface ApiClient {
    */
   SurveyResource getSurvey(int surveyId) throws ApiClientException;
 
-  
   /**
    * Retrieves all of the responses to an identified survey owned by the current user.
    * 
    * @param surveyId The ID of the survey.
-   * @param since Optionally filters the results to include only those survey responses (created or) updated
-   * after (exclusive) the specified UTC date / time.
+   * @param since Optionally filters the results to include only those survey responses (created or) updated after
+   * (exclusive) the specified UTC date / time.
    * @param pageCriteria Optional {@link PageCriteria page criteria}.
-   * @return A {@link SurveyResponsesResource} containing a collection of zero or more {@link SurveyResponseResource}.
-   * @throws ApiClientException If an error occurs on making the API call. 
+   * @return A {@link SurveyResponsesResource} containing a collection of zero or more {@link 
+   * com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource survey response}.
+   * @throws ApiClientException If an error occurs on making the API call.
    */
   SurveyResponsesResource getSurveyResponses(int surveyId, Date since, PageCriteria pageCriteria)
+      throws ApiClientException;
+  
+  /**
+   * Retrieves the webcasts in an identified channel owned by the current user.
+   *  
+   * @param channelId The ID of the channel.
+   * @param since Optionally filters the results to include only those webcasts (created or) updated after (exclusive) 
+   * the specified UTC date / time.
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.
+   * @return A {@link WebcastsResource} containing a collection of zero or more {@link 
+   * com.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource webcasts).
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  WebcastsResource getWebcastsForChannel(int channelId, Date since, PageCriteria pageCriteria)
       throws ApiClientException;
 }

@@ -35,6 +35,7 @@ public class SubscribersWebcastActivityResource {
 
   @XmlElementRef
   private List<SubscriberWebcastActivityResource> subscriberWebcastActivities = new ArrayList<>();
+  
   @XmlElement(name = "link")
   private List<Link> links = new ArrayList<>();
 
