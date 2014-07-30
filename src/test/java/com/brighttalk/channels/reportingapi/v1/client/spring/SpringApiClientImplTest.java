@@ -56,6 +56,8 @@ import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponseRes
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveyResponsesResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.SurveysResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.UserXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.WebcastRegistrationResourceXStreamConverter;
+import com.brighttalk.channels.reportingapi.v1.client.marshall.WebcastRegistrationsResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.WebcastResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.marshall.WebcastsResourceXStreamConverter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.ApiError;
@@ -73,6 +75,8 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseRes
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastRegistrationResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastRegistrationsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
 import com.thoughtworks.xstream.XStream;
@@ -880,11 +884,11 @@ public class SpringApiClientImplTest {
     assertThat(webcastsResource.getWebcasts(), hasSize(0));
     assertThat(webcastsResource.getLinks(), hasSize(0));
   }
-  
+
   /**
    * Tests {@link SpringApiClientImpl#getWebcastsForChannel} when the request is for the first page of all the webcasts
-   * in the identified channel (no filter criteria is specified in the request), and there are more than a pageful 
-   * of webcasts, and hence a next page link.
+   * in the identified channel (no filter criteria is specified in the request), and there are more than a pageful of
+   * webcasts, and hence a next page link.
    * 
    * @throws Exception If an unexpected error occurs.
    */
@@ -892,12 +896,11 @@ public class SpringApiClientImplTest {
   public void getWebcastsForChannelWhenMultipleWebastsAndNextPage() throws Exception {
     int channelId = 1;
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + WebcastsResource.RELATIVE_URI_TEMPLATE;
-    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();    
-    
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getWebcastsForChannelWhenMultipleWebastsAndNextPage-response.xml",
-        this.getClass());
+        "SpringApiClientImplTest.getWebcastsForChannelWhenMultipleWebastsAndNextPage-response.xml", this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -914,9 +917,9 @@ public class SpringApiClientImplTest {
     // Relies on overridden WebcastResource.equals() to test for equality by value
     assertThat(webcastsResource.getWebcasts().get(0), is(expectedWebcastResource));
 
-    assertThat(webcastsResource.getLinks(), hasSize(1));    
+    assertThat(webcastsResource.getLinks(), hasSize(1));
   }
-  
+
   /**
    * Tests {@link SpringApiClientImpl#getWebcastsForChannel} when the request is for the next page of webcasts since a
    * specified date/time, and the response is the last page containing a single webcast.
@@ -925,15 +928,15 @@ public class SpringApiClientImplTest {
    */
   @Test
   public void getWebcastsForChannelWhenSinceAndNextPageWithLastPageSingleWebcast() throws Exception {
-    int channelId = 1;    
+    int channelId = 1;
     String sinceString = "2014-06-28T21:24:59Z";
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + WebcastsResource.RELATIVE_URI_TEMPLATE + 
-        "?since=" + sinceString + "&cursor=1234&pageSize=" + pageSize;
-    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();        
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);    
-    
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + WebcastsResource.RELATIVE_URI_TEMPLATE
+        + "?since=" + sinceString + "&cursor=1234&pageSize=" + pageSize;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
         "SpringApiClientImplTest.getWebcastsForChannelWhenSinceAndNextPageWithLastPageSingleWebcast-response.xml",
@@ -954,7 +957,151 @@ public class SpringApiClientImplTest {
     // Relies on overridden WebcastResource.equals() to test for equality by value
     assertThat(webcastsResource.getWebcasts().get(0), is(expectedWebcastResource));
 
-    assertThat(webcastsResource.getLinks(), hasSize(0));            
+    assertThat(webcastsResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getWebcast} in the case where the requested webcast exists, and contains all
+   * optional fields.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getWebcastExistsFullyPopulated() throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + WebcastResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+
+    // Configure mock API service to respond to API call with a canned API resource read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getWebcastExistsFullyPopulated-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    WebcastResource webcastResource = this.apiClient.getWebcast(channelId, webcastId);
+
+    this.mockReportingApiService.verify();
+    assertThat(webcastResource, notNullValue());
+
+    // Assert all fields in the returned Resource
+    WebcastResource expectedWebcastResource = (WebcastResource) this.xstream.fromXML(responseBody.getInputStream());
+    // Relies on overridden WebcastResource.equals() to test for equality by value
+    assertThat(webcastResource, is(expectedWebcastResource));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getWebcastRegistrationsForWebcast} when the request is for the first page of all
+   * the registrations for an identified webcast (no filter criteria is specified in the request), and none exist.
+   */
+  @Test
+  public void getWebcastRegistrationsForWebcastWhenZeroFound() {
+    int channelId = 1;
+    int webcastId = 2;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+
+    // Configure mock API service to respond to API call
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess("<webcastRegistrations/>", MediaType.APPLICATION_XML));
+
+    // Perform the test
+    WebcastRegistrationsResource preregistrationsResource = this.apiClient.getWebcastRegistrationsForWebcast(channelId,
+        webcastId, null, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(preregistrationsResource, notNullValue());
+    assertThat(preregistrationsResource.getWebcastRegistrations(), hasSize(0));
+    assertThat(preregistrationsResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getWebcastRegistrationsForWebcast} when the request is for the first page of all
+   * the pre-registrations for the identified webcast (no filter criteria is specified in the request), and there are
+   * more than a pageful of pre-registrations, and hence a next page link.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getWebcastRegistrationsForWebcastWhenMultipleRegistrationsAndNextPage() throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getWebcastRegistrationsForWebcastWhenMultipleRegistrationsAndNextPage-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    WebcastRegistrationsResource webcastRegistrationsResource = this.apiClient.getWebcastRegistrationsForWebcast(
+        channelId, webcastId, null, null, null);
+
+    this.mockReportingApiService.verify();
+    assertThat(webcastRegistrationsResource, notNullValue());
+    assertThat(webcastRegistrationsResource.getWebcastRegistrations(), hasSize(2));
+
+    // Assert all fields in the first of the returned Resource
+    WebcastRegistrationsResource expectedWebcastRegistrationsResource = (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastRegistrationResource expectedWebcastRegistrationResource = expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
+        0);
+    // Relies on overridden WebcastResource.equals() to test for equality by value
+    assertThat(webcastRegistrationsResource.getWebcastRegistrations().get(0), is(expectedWebcastRegistrationResource));
+
+    assertThat(webcastRegistrationsResource.getLinks(), hasSize(1));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getWebcastRegistrationsForWebcast} when the request is for the next page of
+   * pre-registrations, for which the registrant has also subsequently viewed, since a specified date/time, and the
+   * response is the last page containing a single pre-registration.
+   * 
+   * @throws Exception If an unexpected error occurs.
+   */
+  @Test
+  public void getWebcastRegistrationsForWebcastWhenViewedOnlySinceAndNextPageWithLastPageSingleWebcast()
+      throws Exception {
+    int channelId = 1;
+    int webcastId = 2;
+    Boolean viewed = true;
+    String sinceString = "2013-07-10T12:23:22Z";
+    Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
+    int pageSize = 200;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&viewed="
+        + viewed + "&cursor=1234&pageSize=" + pageSize;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
+    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getWebcastRegistrationsForWebcastWhenViewedOnlySinceAndNextPageWithLastPageSingleWebcast-response.xml",
+        this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    WebcastRegistrationsResource webcastRegistrationsResource = this.apiClient.getWebcastRegistrationsForWebcast(
+        channelId, webcastId, sinceDate, viewed, pageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(webcastRegistrationsResource, notNullValue());
+    assertThat(webcastRegistrationsResource.getWebcastRegistrations(), hasSize(1));
+
+    // Assert all fields in the first of the returned Resource
+    WebcastRegistrationsResource expectedWebcastRegistrationsResource = (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastRegistrationResource expectedWebcastRegistrationResource = expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
+        0);
+    // Relies on overridden WebcastResource.equals() to test for equality by value
+    assertThat(webcastRegistrationsResource.getWebcastRegistrations().get(0), is(expectedWebcastRegistrationResource));
+
+    assertThat(webcastRegistrationsResource.getLinks(), hasSize(0));
   }
 
   /**
@@ -1005,11 +1152,17 @@ public class SpringApiClientImplTest {
 
     this.xstream.alias("surveyResponses", SurveyResponsesResource.class);
     this.xstream.registerConverter(new SurveyResponsesResourceXStreamConverter());
-    
+
     this.xstream.alias("webcasts", WebcastsResource.class);
     this.xstream.registerConverter(new WebcastsResourceXStreamConverter());
-    
+
     this.xstream.alias("webcast", WebcastResource.class);
-    this.xstream.registerConverter(new WebcastResourceXStreamConverter());    
+    this.xstream.registerConverter(new WebcastResourceXStreamConverter());
+
+    this.xstream.alias("webcastRegistrations", WebcastRegistrationsResource.class);
+    this.xstream.registerConverter(new WebcastRegistrationsResourceXStreamConverter());
+
+    this.xstream.alias("webcastRegistration", WebcastRegistrationResource.class);
+    this.xstream.registerConverter(new WebcastRegistrationResourceXStreamConverter());
   }
 }

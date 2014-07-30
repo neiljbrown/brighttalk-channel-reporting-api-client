@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<webcastRegistrations>
+  <webcastRegistration id="3920335">
+    <webcast id="2"/>
+    <user id="186451">
+      <firstName>Stacey</firstName>
+      <lastName>Vevenka</lastName>
+      <realm id="123"/>
+      <realmUserId>svevenka</realmUserId>      
+      <email>svevenka@acme.com</email>
+      <timeZone>Europe/London</timeZone>
+      <phone>02071958464</phone>
+      <jobTitle>Senior Communications Specialist</jobTitle>
+      <level>Other</level>
+      <companyName>Acme Ltd</companyName>
+      <companySize>101-250</companySize>
+      <industry>Technology - Software &amp; Services</industry>
+      <country>United Kingdom</country>
+    </user>
+    <embed>
+      <url>https://www.brighttalk.com/webcast/1166/2</url>
+    </embed>
+    <created>2013-07-11T12:45:01Z</created>
+    <lastUpdated>2013-07-11T12:45:01Z</lastUpdated>
+    <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+    <link href="https://api.test.brighttalk.net/v1/channel_subscriber/1023057" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+  </webcastRegistration>
+  <webcastRegistration id="3920147">
+    <webcast id="2"/>
+    <user id="2392025">
+        <firstName>Fred</firstName>
+        <lastName>Oblobof</lastName>
+        <email>foblobof@brighttalk.com</email>
+        <timeZone>Europe/London</timeZone>
+        <phone>07957554298</phone>
+        <jobTitle>Marketing Associate</jobTitle>
+        <level>Other</level>
+        <companyName>BrightTALK</companyName>
+        <companySize>101-250</companySize>
+        <industry>Media, Advertising, &amp; PR</industry>
+        <country>United States</country>
+        <stateProvince>California</stateProvince>
+    </user>
+    <embed>
+      <url>https://www.brighttalk.com/webcast/1166/2</url>
+      <track>track123</track>  
+    </embed>
+    <created>2013-07-11T12:23:23Z</created>
+    <lastUpdated>2013-07-11T12:23:23Z</lastUpdated>
+    <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+    <link href="https://api.test.brighttalk.net/v1/channel_subscriber/2071751" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+  </webcastRegistration>
+  <link href="https://api.stage.brighttalk.net/v1/channel/1/webcast/2/registrations?pageSize=2&amp;cursor=3920147-1373545403" rel="next"/>
+</webcastRegistrations>

@@ -26,14 +26,18 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastRegistrationResource {
   @XmlAttribute
-  private final int id;
-  private final WebcastResource webcast;
-  private final User user;
-  private final Embed embed;
-  private final Date created;
-  private final Date lastUpdated;
+  private int id;
+  private WebcastResource webcast;
+  private User user;
+  private Embed embed;
+  private Date created;
+  private Date lastUpdated;
   @XmlElement(name = "link")
-  private final List<Link> links;
+  private List<Link> links;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private WebcastRegistrationResource() {
+  }    
   
   public WebcastRegistrationResource(int id, WebcastResource webcast, User user, Embed embed, Date created,
       Date lastUpdated, List<Link> links) {

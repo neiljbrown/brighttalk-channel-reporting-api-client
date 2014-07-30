@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<webcastRegistrations>
+  <webcastRegistration id="3900105">
+    <webcast id="73313"/>
+    <user id="1857441">
+      <firstName>Steven</firstName>
+      <lastName>Emerald</lastName>
+      <email>1857441@pioneersolutions.com</email>
+      <timeZone>America/Denver</timeZone>
+      <phone>1111111111</phone>
+      <jobTitle>Marketing Analyst</jobTitle>
+      <level>Manager/Team lead</level>
+      <companyName>Pioneer Soutions LLC</companyName>
+      <companySize>11-100</companySize>
+      <industry>Technology - Software &amp; Services</industry>
+      <country>United States</country>
+      <stateProvince>Colorado</stateProvince>
+    </user>
+    <embed>
+      <url>https://www.brighttalk.com/webcast/1166/2</url>
+    </embed>
+    <created>2013-07-08T18:42:56Z</created>
+    <lastUpdated>2013-07-08T18:42:56Z</lastUpdated>
+    <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+    <link href="https://api.test.brighttalk.net/v1/channel_subscriber/2868579" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+    </webcastRegistration>
+</webcastRegistrations>    

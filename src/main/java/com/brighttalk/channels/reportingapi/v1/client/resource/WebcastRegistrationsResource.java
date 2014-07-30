@@ -13,6 +13,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.Objects;
@@ -23,9 +24,19 @@ import com.google.common.base.Objects;
 @XmlRootElement(name = "webcastRegistrations")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastRegistrationsResource {
-  private final List<WebcastRegistrationResource> webcastRegistrations;
+  
+  /** URI template string for the relative URL of the Webcast Registrations for an identified webcast. */
+  public static final String FOR_WEBCAST_RELATIVE_URI_TEMPLATE = "/v1/channel/{channelId}/webcast/{webcastId}/registrations";  
+  
+  @XmlElementRef  
+  private List<WebcastRegistrationResource> webcastRegistrations;
+  
   @XmlElement(name = "link")
-  private final List<Link> links;
+  private List<Link> links;
+  
+  // Private, as only exists only to keep JAXB implementation happy.
+  private WebcastRegistrationsResource() {
+  }  
 
   public WebcastRegistrationsResource(List<WebcastRegistrationResource> webcastRegistrations, List<Link> links) {
     this.webcastRegistrations = webcastRegistrations;
