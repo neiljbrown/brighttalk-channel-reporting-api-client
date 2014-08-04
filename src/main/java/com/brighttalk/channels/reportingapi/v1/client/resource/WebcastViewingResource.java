@@ -26,20 +26,26 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebcastViewingResource {
   @XmlAttribute
-  private final int id;
-  private final WebcastResource webcast;
-  private final int duration;
-  private final User user;
-  private final Embed embed;
-  private final Date created;
-  private final Date lastUpdated;
+  private int id;
+  private WebcastResource webcast;
+  private String webcastStatus;
+  private int duration;
+  private User user;
+  private Embed embed;
+  private Date created;
+  private Date lastUpdated;
   @XmlElement(name = "link")
-  private final List<Link> links;
-  
-  public WebcastViewingResource(int id, WebcastResource webcast, int duration, User user, Embed embed, Date created,
-      Date lastUpdated, List<Link> links) {
+  private List<Link> links;
+
+  // Private, as only exists only to keep JAXB implementation happy.
+  private WebcastViewingResource() {
+  }
+
+  public WebcastViewingResource(int id, WebcastResource webcast, String webcastStatus, int duration, User user,
+      Embed embed, Date created, Date lastUpdated, List<Link> links) {
     this.id = id;
     this.webcast = webcast;
+    this.webcastStatus = webcastStatus;
     this.duration = duration;
     this.user = user;
     this.embed = embed;
@@ -54,6 +60,10 @@ public class WebcastViewingResource {
 
   public final WebcastResource getWebcast() {
     return this.webcast;
+  }
+    
+  public final String getWebcastStatus() {
+    return this.webcastStatus;
   }
 
   public final int getDuration() {
@@ -93,7 +103,7 @@ public class WebcastViewingResource {
       .add("lastUpdated", this.lastUpdated)        
       .add("links", this.links)      
       .toString();    
-    /* @formatter:on */    
+    /* @formatter:on */
   }
 
   @Override
@@ -172,5 +182,5 @@ public class WebcastViewingResource {
       return false;
     }
     return true;
-  }    
+  }
 }

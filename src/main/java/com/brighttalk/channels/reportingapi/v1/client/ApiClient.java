@@ -17,6 +17,8 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesRe
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveysResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastRegistrationsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource;
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastStatus;
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingsResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
 
 /**
@@ -132,7 +134,7 @@ public interface ApiClient {
   SurveyResponsesResource getSurveyResponses(int surveyId, Date since, PageCriteria pageCriteria)
       throws ApiClientException;
 
-  /**
+/**
    * Retrieves the webcasts in an identified channel owned by the current user.
    *  
    * @param channelId The ID of the channel.
@@ -173,4 +175,39 @@ public interface ApiClient {
    */
   WebcastRegistrationsResource getWebcastRegistrationsForWebcast(int channelId, int webcastId, Date since,
       Boolean viewed, PageCriteria pageCriteria) throws ApiClientException;
+
+  /**
+   * Retrieves the viewings that have taken place for all webcasts in a channel owned by the current user.
+   * 
+   * @param channelId The ID of the channel.
+   * @param since Optionally filters the results to include only those viewings (created or) updated after
+   * (exclusive) the specified UTC date / time.
+   * @param webcastStatus Optionally filters the results according to the status of the webcast at the time the viewing 
+   * took place. Must be one of supported status {@link WebcastStatus#LIVE} or {@link WebcastStatus#RECORDED}.
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.    
+   * @return A {@link WebcastViewingsResource} containing a collection of zero or more {@link 
+   * com.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast vieiwng).
+   * @throws IllegalArgumentException If {@code webcastStatus} is not one of the status supported by this API.
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  WebcastViewingsResource getWebcastViewingsForChannel(int channelId, Date since, WebcastStatus webcastStatus,
+      PageCriteria pageCriteria) throws ApiClientException;
+
+  /**
+   * Retrieves the viewings that have taken place for an identified webcast in a channel owned by the current user.
+   * 
+   * @param channelId The ID of the channel.
+   * @param webcastId The ID of the webcast. 
+   * @param since Optionally filters the results to include only those vieiwngs (created or) updated after
+   * (exclusive) the specified UTC date / time.
+   * @param webcastStatus Optionally filters the results according to the status of the webcast at the time the viewing 
+   * took place. Must be one of supported status {@link WebcastStatus#LIVE} or {@link WebcastStatus#RECORDED}.
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.    
+   * @return A {@link WebcastViewingsResource} containing a collection of zero or more {@link 
+   * com.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast vieiwng).
+   * @throws IllegalArgumentException If {@code webcastStatus} is not one of the status supported by this API.
+   * @throws ApiClientException If an error occurs on making the API call.
+   */
+  WebcastViewingsResource getWebcastViewingsForWebcast(int channelId, int webcastId, Date since,
+      WebcastStatus webcastStatus, PageCriteria pageCriteria) throws ApiClientException;
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<webcastViewings>
+  <webcastViewing id="9947390">
+    <webcast id="2"/>
+    <webcastStatus>live</webcastStatus>
+    <duration>600</duration>
+    <user id="19224">
+      <firstName>Davey</firstName>
+      <lastName>Press</lastName>
+      <email>dpress@brighttalk.com</email>
+      <timeZone>Europe/London</timeZone>
+      <phone>7957355064</phone>
+      <jobTitle>Developer Extrodinaire</jobTitle>
+      <level>Other</level>
+      <companyName>BrightTALK</companyName>
+      <companySize>11-100</companySize>
+      <industry>Technology - Software &amp; Services</industry>
+      <country>United Kingdom</country>
+    </user>
+    <embed>
+      <url>https://www.test.brighttalk.net/webcast/1/2</url>
+    </embed>
+    <created>2014-06-28T23:10:31Z</created>
+    <lastUpdated>2014-06-28T23:10:31Z</lastUpdated>
+    <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+    <link href="https://api.test.brighttalk.net/v1/channel_subscriber/988053" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+  </webcastViewing>
+  <webcastViewing id="8254644">
+    <webcast id="2"/>
+    <webcastStatus>recorded</webcastStatus>
+    <duration>300</duration>
+    <user id="66">
+      <realm id="123"/>
+      <realmUserId>gcubra</realmUserId>    
+      <firstName>Goran</firstName>
+      <lastName>Cubra</lastName>
+      <email>gcubra@acme.com</email>
+      <timeZone>America/Los_Angeles</timeZone>
+      <phone>020 7334 8559</phone>
+      <jobTitle>Senior Designer</jobTitle>
+      <level>Other</level>
+      <companyName>Acme Ltd</companyName>
+      <companySize>101-250</companySize>
+      <industry>Other</industry>
+      <country>United States</country>
+      <stateProvince>California</stateProvince>      
+    </user>
+    <embed>
+      <url>https://www.acme.com/webcasts</url>
+      <track>track123</track>
+    </embed>
+    <created>2013-11-28T14:35:04Z</created>
+    <lastUpdated>2013-11-28T14:35:04Z</lastUpdated>
+    <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+    <link href="https://api.test.brighttalk.net/v1/channel_subscriber/113733" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+  </webcastViewing>
+  <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2/viewings?pageSize=2&amp;cursor=9947388-1403997003" rel="next"/>
+</webcastViewings>

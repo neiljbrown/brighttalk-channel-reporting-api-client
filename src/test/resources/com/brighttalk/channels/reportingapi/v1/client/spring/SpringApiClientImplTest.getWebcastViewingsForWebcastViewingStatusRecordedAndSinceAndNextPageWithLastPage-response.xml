@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<webcastViewings>
+  <webcastViewing id="8200741">
+      <webcast id="2"/>
+      <webcastStatus>recorded</webcastStatus>
+      <duration>120</duration>
+      <user id="1592267">
+          <firstName>Juan Pablo</firstName>
+          <lastName>Delacaneza</lastName>
+          <email>pablo@delacenza.test.com</email>
+          <timeZone>America/Lima</timeZone>
+          <phone>51342555976</phone>
+          <jobTitle>CEO</jobTitle>
+          <level>C-Level/Executive</level>
+          <companyName>Vision Marketing</companyName>
+          <companySize>11-100</companySize>
+          <industry>Media, Advertising, &amp; PR</industry>
+          <country>Ecuador</country>
+      </user>
+      <embed>
+        <url>https://www.test.brighttalk.net/webcast/1/2</url>
+      </embed>
+      <created>2013-07-11T19:14:35Z</created>
+      <lastUpdated>2013-07-11T19:16:37Z</lastUpdated>
+      <link href="https://api.test.brighttalk.net/v1/channel/1/webcast/2" rel="https://api.brighttalk.com/rel/webcast"/>
+      <link href="https://api.test.brighttalk.net/v1/channel_subscriber/3140967" rel="https://api.brighttalk.com/rel/channel_subscriber"/>
+  </webcastViewing>
+</webcastViewings>  

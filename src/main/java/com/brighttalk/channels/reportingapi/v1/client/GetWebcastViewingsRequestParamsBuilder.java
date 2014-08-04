@@ -8,23 +8,25 @@
 package com.brighttalk.channels.reportingapi.v1.client;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
+import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastStatus;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
 
 /**
- * Builds a map representation of the request parameters supported by the Get Webcast Registrations APIs from supplied
+ * Builds a map representation of the request parameters supported by the Get Webcast Viewings APIs from supplied
  * values. Also defines the set of named request parameters supported by those APIs.
  */
-public class GetWebcastRegistrationsRequestParamsBuilder {
+public class GetWebcastViewingsRequestParamsBuilder {
 
   /* CHECKSTYLE:OFF */
   enum ParamName {
     SINCE("since"),
 
-    VIEWED("viewed");
+    WEBCAST_STATUS("webcastStatus");
 
     private String name;
 
@@ -36,6 +38,9 @@ public class GetWebcastRegistrationsRequestParamsBuilder {
       return this.name;
     }
   }
+
+  /** The supported subset of {@link WebcastStatus} which viewings can be filtered by. */
+  private static EnumSet<WebcastStatus> VIEWING_WEBCAST_STATUS = EnumSet.of(WebcastStatus.LIVE, WebcastStatus.RECORDED);
 
   /* CHECKSTYLE:ON */
 
@@ -49,19 +54,25 @@ public class GetWebcastRegistrationsRequestParamsBuilder {
   /**
    * Builds the request parameters using the data from the supplied parameters.
    * 
-   * @param since Optionally filters the results to include only those pre-registrations (created or) updated after
-   * (exclusive) the specified UTC date / time.
-   * @param viewed Optionally filters the results according to whether the registrant has subsequently viewed the
-   * webcast in any status (live or recorded). 
-   * @param pageCriteria Optional {@link PageCriteria page criteria}. 
+   * @param since Optionally filters the results to include only those viewings (created or) updated after (exclusive)
+   * the specified UTC date / time.
+   * @param webcastStatus Optionally filters the results according to the status of the webcast at the time the viewing
+   * took place. Must be one of supported status {@link WebcastStatus#LIVE} or {@link WebcastStatus#RECORDED}.
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.
+   * @throws IllegalArgumentException If {@code webcastStatus} is not one of the status supported by this API.
    */
-  public GetWebcastRegistrationsRequestParamsBuilder(Date since, Boolean viewed, PageCriteria pageCriteria) {
+  public GetWebcastViewingsRequestParamsBuilder(Date since, WebcastStatus webcastStatus, PageCriteria pageCriteria) {
     if (since != null) {
       this.params.put(ParamName.SINCE.getName(), this.dateFormat.formatAsDateTime(since));
     }
-    if (viewed != null) {
-      this.params.put(ParamName.VIEWED.getName(), viewed.toString());
-    }    
+    if (webcastStatus != null) {
+      if (VIEWING_WEBCAST_STATUS.contains(webcastStatus)) {
+        this.params.put(ParamName.WEBCAST_STATUS.getName(), webcastStatus.toString());
+      } else {
+        throw new IllegalArgumentException("Invalid webcast status [" + webcastStatus
+            + "]. Webcast status must be one of " + VIEWING_WEBCAST_STATUS + ".");
+      }
+    }
     if (pageCriteria != null) {
       Map<String, List<String>> pagingParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
       for (String paramName : pagingParams.keySet()) {
