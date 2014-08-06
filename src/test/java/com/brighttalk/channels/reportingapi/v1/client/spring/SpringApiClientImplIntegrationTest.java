@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -88,35 +89,46 @@ import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
 import com.thoughtworks.xstream.XStream;
 
 /**
- * Unit tests for {@link SpringApiClientImpl}.
+ * Integration tests for the {@link SpringApiClientImpl} implementation of the Get My Channels APIs.
  * <p>
- * This test case is implemented as Spring-based integration test - it loads the configured Spring application context
- * using the {@link SpringJUnit4ClassRunner}. In addition to testing the Spring bean configuration, this supports using
- * the production configured instance of the RestTemplate as a test fixture.
+ * These tests load the application's Spring application context using the {@link SpringJUnit4ClassRunner}. In addition
+ * to testing the Spring bean configuration, this tests the use of the production configured instance of the
+ * RestTemplate.
  * <p>
  * The test case uses the Spring MVC Test framework’s {@link MockRestServiceServer} to provide a dynamically mocked
  * implementation of the Reporting API service, and a fluent API for asserting expected API requests, and specifying
- * stubbed responses.
- * <p>
- * When using the MockRestServiceServer, the RestTemplate is exercised exactly as it would be if it were making HTTP
- * requests to the real API service. The test coverage provided by these unit tests therefore includes marshalling and
- * unmarshalling the HTTP request and response bodies, exercising the API resource objects (DTOs) and their configured
- * marshallers and marshalling annotations in the process.
+ * stubbed responses. When using the MockRestServiceServer, the RestTemplate is exercised exactly as it would be if it
+ * were making HTTP requests to the real API service. The test coverage provided by these unit tests therefore include
+ * marshalling and unmarshalling the HTTP request and response bodies, exercising the API resource objects (DTOs) and
+ * their configured marshallers and marshalling annotations in the process.
  * <p>
  * The MockRestServiceServer works by substituting the Spring {@link ClientHttpRequestFactory} for a mock
  * implementation. As a consequence, the coverage of these unit tests does NOT extend as far as testing the production
- * HTTP client (and its configuration). This requires a separate set of integration tests.
+ * HTTP client and its configuration (e.g. support for basic auth and compression). This requires a separate set of,
+ * end-to-end integration tests.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { AppConfig.class })
-public class SpringApiClientImplTest {
+public class SpringApiClientImplIntegrationTest {
 
+  /** Instance of class under test */
   private SpringApiClientImpl apiClient;
-  private MockRestServiceServer mockReportingApiService;
-  @Autowired(required = false)
-  // Use a RestTemplate with default configuration if one is not injected
-  private RestTemplate restTemplate = new RestTemplate();
 
+  /**
+   * Instance of {@link RestTemplate} that both the instance of the {@link SpringApiClientImpl} class under test, and
+   * the {@link #mockReportingApiService} are configured to use.
+   */
+  @Autowired
+  @Qualifier("apiClientRestTemplate")
+  private RestTemplate restTemplate;
+
+  /**
+   * Dynamic mock implementation of the Reporting API service, implemented using the Spring MVC Test framework’s
+   * {@link MockRestServiceServer}.
+   */
+  private MockRestServiceServer mockReportingApiService;
+
+  /** Instance of {@link XStream} used to unmarshall (deserialise) canned files of API response payloads used by tests. */
   private XStream xstream;
 
   /**
@@ -124,9 +136,9 @@ public class SpringApiClientImplTest {
    */
   @Before
   public void setUp() throws Exception {
-    this.mockReportingApiService = MockRestServiceServer.createServer(this.restTemplate);
     this.apiClient = new SpringApiClientImpl(new URL("https://api.test.brighttalk.net/"), this.restTemplate);
-    initXStream();
+    this.mockReportingApiService = MockRestServiceServer.createServer(this.restTemplate);
+    this.initXStream();
   }
 
   /**
@@ -511,7 +523,7 @@ public class SpringApiClientImplTest {
    * @throws Exception If an unexpected error occurs.
    */
   @Test
-  public void getChannelSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage() throws Exception {
+  public void getSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage() throws Exception {
     int channelId = 1;
     int webcastId = 2;
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
@@ -557,7 +569,7 @@ public class SpringApiClientImplTest {
    * @throws Exception If an unexpected error occurs.
    */
   @Test
-  public void getChannelSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage()
+  public void getSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage()
       throws Exception {
     int channelId = 1;
     int webcastId = 2;
@@ -600,8 +612,7 @@ public class SpringApiClientImplTest {
    * @throws Exception If an unexpected error occurs.
    */
   @Test
-  public void getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse()
-      throws Exception {
+  public void getSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse() throws Exception {
     int channelId = 1;
     int webcastId = 2;
     String sinceString = "2014-06-28T21:24:59Z";
@@ -646,8 +657,7 @@ public class SpringApiClientImplTest {
    * @see #getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse
    */
   @Test
-  public void getChannelSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse()
-      throws Exception {
+  public void getSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse() throws Exception {
     int channelId = 1;
     String sinceString = "2014-06-28T21:24:59Z";
     boolean expandChannelSurveyResponse = true;
@@ -1238,69 +1248,48 @@ public class SpringApiClientImplTest {
   }
 
   /**
-   * Creates and configures the {@link XStream} instance the test uses to unamrshall (deserialise) canned API response
-   * payloads.
+   * Configures the {@link XStream} instance the test uses to unamrshall (deserialise) canned API response payloads.
    */
-  private void initXStream() {
+  protected void initXStream() {
     this.xstream = new XStream();
-
     this.xstream.alias("channels", ChannelsResource.class);
     this.xstream.registerConverter(new ChannelsResourceXStreamConverter());
-
     this.xstream.alias("channel", ChannelResource.class);
     this.xstream.registerConverter(new ChannelResourceXStreamConverter());
-
     this.xstream.alias("link", Link.class);
     this.xstream.registerConverter(new LinkXStreamConverter());
-
     this.xstream.alias("channelSubscribers", ChannelSubscribersResource.class);
     this.xstream.registerConverter(new ChannelSubscribersResourceXStreamConverter());
-
     this.xstream.alias("channelSubscriber", ChannelSubscriberResource.class);
     this.xstream.registerConverter(new ChannelSubscriberResourceXStreamConverter());
-
     this.xstream.alias("embed", Embed.class);
     this.xstream.registerConverter(new EmbedXStreamConverter());
-
     this.xstream.alias("user", User.class);
     this.xstream.registerConverter(new UserXStreamConverter());
-
     this.xstream.alias("subscribersWebcastActivity", SubscribersWebcastActivityResource.class);
     this.xstream.registerConverter(new SubscribersWebcastActivityResourceXStreamConverter());
-
     this.xstream.alias("subscriberWebcastActivity", SubscriberWebcastActivityResource.class);
     this.xstream.registerConverter(new SubscriberWebcastActivityResourceXStreamConverter());
-
     this.xstream.alias("surveyResponse", SurveyResponseResource.class);
     this.xstream.registerConverter(new SurveyResponseResourceXStreamConverter());
-
     this.xstream.alias("question", Question.class);
     this.xstream.registerConverter(new QuestionXStreamConverter());
-
     this.xstream.alias("surveys", SurveysResource.class);
     this.xstream.registerConverter(new SurveysResourceXStreamConverter());
-
     this.xstream.alias("survey", SurveyResource.class);
     this.xstream.registerConverter(new SurveyResourceXStreamConverter());
-
     this.xstream.alias("surveyResponses", SurveyResponsesResource.class);
     this.xstream.registerConverter(new SurveyResponsesResourceXStreamConverter());
-
     this.xstream.alias("webcasts", WebcastsResource.class);
     this.xstream.registerConverter(new WebcastsResourceXStreamConverter());
-
     this.xstream.alias("webcast", WebcastResource.class);
     this.xstream.registerConverter(new WebcastResourceXStreamConverter());
-
     this.xstream.alias("webcastRegistrations", WebcastRegistrationsResource.class);
     this.xstream.registerConverter(new WebcastRegistrationsResourceXStreamConverter());
-
     this.xstream.alias("webcastRegistration", WebcastRegistrationResource.class);
     this.xstream.registerConverter(new WebcastRegistrationResourceXStreamConverter());
-
     this.xstream.alias("webcastViewings", WebcastViewingsResource.class);
     this.xstream.registerConverter(new WebcastViewingsResourceXStreamConverter());
-
     this.xstream.alias("webcastViewing", WebcastViewingResource.class);
     this.xstream.registerConverter(new WebcastViewingResourceXStreamConverter());
   }

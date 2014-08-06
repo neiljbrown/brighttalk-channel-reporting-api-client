@@ -65,7 +65,7 @@ public class AppConfig {
    * @return The instance of {@link RestTemplate} used by the API client.
    */
   @Bean
-  public RestTemplate restTemplate() {
+  public RestTemplate apiClientRestTemplate() {
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.setRequestFactory(this.clientHttpRequestFactory());
     restTemplate.setErrorHandler(this.responseErrorHandler());
