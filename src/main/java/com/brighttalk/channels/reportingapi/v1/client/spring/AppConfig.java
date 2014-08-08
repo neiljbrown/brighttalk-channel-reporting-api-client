@@ -66,6 +66,9 @@ public class AppConfig {
    */
   @Bean
   public RestTemplate apiClientRestTemplate() {
+    // Use the default set of HTTP message converters provided by RestTemplate. This will result in the RestTemplate
+    // setting an Accept request header that will include a (*/xml) media-type supported by the Reporting API service,
+    // as the default set of converters includes the JSE's JAXB converter which can read and write XML.
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.setRequestFactory(this.clientHttpRequestFactory());
     restTemplate.setErrorHandler(this.responseErrorHandler());
@@ -103,7 +106,7 @@ public class AppConfig {
   }
 
   /**
-   * @return The instance of {@link ResponseErrorHandler} to be used by {@link RestTemplate}. 
+   * @return The instance of {@link ResponseErrorHandler} to be used by {@link RestTemplate}.
    */
   @Bean
   public ResponseErrorHandler responseErrorHandler() {
