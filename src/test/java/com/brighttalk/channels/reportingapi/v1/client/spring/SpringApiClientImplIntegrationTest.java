@@ -10,6 +10,7 @@ package com.brighttalk.channels.reportingapi.v1.client.spring;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +41,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import com.brighttalk.channels.reportingapi.v1.client.ApiClientException;
 import com.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.brighttalk.channels.reportingapi.v1.client.ApiErrorResponseException;
 import com.brighttalk.channels.reportingapi.v1.client.NextPageUrl;
@@ -260,6 +262,58 @@ public class SpringApiClientImplIntegrationTest {
     }
 
     this.mockReportingApiService.verify();
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getMyChannels} in the case where the API service returns a response containing a
+   * field value which cannot be converted to the expected type as defined in the API resource class. In this case,
+   * return of a {@link ChannelResource} with a non-numeric identifier is tested.
+   */
+  @Test
+  public void getMyChannelsInvalidResponseTypeMismatchChannelId() {
+    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getMyChannelsInvalidResponseTypeMismatchChannelId-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    try {
+      this.apiClient.getMyChannels(null);
+      fail("Expected an exception to be thrown.");
+    // Current behaviour, as exhibited by the JAXB RI, is to throw an exception on failing to parse integer string       
+    } catch (NumberFormatException e) {
+      assertTrue("Unexpected detail message for exception [" + e.toString() + "].", e.getMessage().matches(".*foo.*"));
+    }
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getMyChannels} in the case where the API service returns a response containing a
+   * field value which cannot be converted to the expected type as defined in the API resource class. In this case,
+   * return of a {@link ChannelResource} with created date/time string which can't be converted to date is tested.
+   */
+  @Test
+  public void getMyChannelsInvalidResponseTypeMismatchChannelCreatedDate() {
+    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getMyChannelsInvalidResponseTypeMismatchChannelCreatedDate-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    ChannelsResource channelsResource = this.apiClient.getMyChannels(null);
+   
+    // Current behaviour, as exhibited by the JAXB RI, is to suppress the error, resulting in a null field
+    this.mockReportingApiService.verify();
+    assertThat(channelsResource, notNullValue());
+    assertThat(channelsResource.getChannels().get(0), notNullValue());
+    assertThat(channelsResource.getChannels().get(0).getCreated(), nullValue());    
   }
 
   /**
@@ -777,6 +831,32 @@ public class SpringApiClientImplIntegrationTest {
     // Relies on overridden SurveyResource.equals() to test for equality by value
     assertThat(surveyResource, is(expectedSurveyResource));
   }
+  
+  /**
+   * Tests {@link SpringApiClientImpl#getSurvey} in the case where the API service returns a response containing a
+   * field value which cannot be converted to the expected type as defined in the API resource class. In this case,
+   * return of a {@link SurveyResource} with an active field which can't be converted to a boolean is tested.
+   */
+  @Test
+  public void getSurveyWhenInvalidResponseTypeMismatchActive() {
+    int surveyId = 1;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + SurveyResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    Resource responseBody = new ClassPathResource(
+        "SpringApiClientImplTest.getSurveyWhenInvalidResponseTypeMismatchActive-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+    // Perform the test
+    SurveyResource surveyResource = this.apiClient.getSurvey(surveyId);
+    
+    // Current behaviour, as exhibited by the JAXB RI, is to suppress the error, resulting in default field value
+    this.mockReportingApiService.verify();
+    assertThat(surveyResource, notNullValue());
+    assertThat(surveyResource.isActive(), is(false));    
+  }  
 
   /**
    * Tests {@link SpringApiClientImpl#getSurveyResponses} when the request is for the first page of all the survey
