@@ -41,7 +41,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
-import com.brighttalk.channels.reportingapi.v1.client.ApiClientException;
 import com.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.brighttalk.channels.reportingapi.v1.client.ApiErrorResponseException;
 import com.brighttalk.channels.reportingapi.v1.client.NextPageUrl;

@@ -7,7 +7,9 @@
  */
 package com.brighttalk.channels.reportingapi.v1.client.spring;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -16,6 +18,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +28,14 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.http.converter.xml.MarshallingHttpMessageConverter;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+
+import com.brighttalk.channels.reportingapi.v1.client.jaxb.CustomValidationEventHandler;
+import com.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
 
 /**
  * An instance of a {@link Configuration Spring Java Config} class which declares the objects used by the
@@ -62,17 +71,70 @@ public class AppConfig {
   }
 
   /**
+   * @param httpMessageConverters The list of {@link HttpMessageConverter} that the created {@link RestTemplate} should
+   * used to read/write HTTP request and response body. Ultimately dictates the set of media-types supported by the
+   * client.
+   * 
    * @return The instance of {@link RestTemplate} used by the API client.
    */
   @Bean
-  public RestTemplate apiClientRestTemplate() {
-    // Use the default set of HTTP message converters provided by RestTemplate. This will result in the RestTemplate
-    // setting an Accept request header that will include a (*/xml) media-type supported by the Reporting API service,
-    // as the default set of converters includes the JSE's JAXB converter which can read and write XML.
-    RestTemplate restTemplate = new RestTemplate();
+  @Autowired
+  // Note - @Value is needed on the injected parameter to get Spring to use a specific bean of type List rather than its
+  // default behaviour of building a List from all the beans of the matching member type
+  public RestTemplate apiClientRestTemplate(
+      @Value("#{httpMessageConverters}") List<HttpMessageConverter<?>> httpMessageConverters) {
+    // Use custom list of HttpMessageConverter rather than the default to allow the marshalling config to be customised
+    RestTemplate restTemplate = new RestTemplate(httpMessageConverters);
     restTemplate.setRequestFactory(this.clientHttpRequestFactory());
     restTemplate.setErrorHandler(this.responseErrorHandler());
     return restTemplate;
+  }
+
+  /**
+   * Creates the list of {@link HttpMessageConverter} that the {@link RestTemplate} should use to read/write HTTP
+   * request and response body. Ultimately dictates the set of media-types supported by the client.
+   * <p>
+   * A custom list of HTTP message converter are created rather than relying on the default ones provided by
+   * RestTemplate to support the supply of a custom configured marshaller. The list of created HTTP message converter
+   * will include a {@link MarshallingHttpMessageConverter} that uses the supplied {@link Marshaller}.
+   * 
+   * @param marshaller The pre-configured {@link Marshaller} that the created {@link MarshallingHttpMessageConverter}
+   * should use. Must also support unmarshalling, by implementing {@link Unmarshaller}.
+   * 
+   * @return The created list of {@link HttpMessageConverter}.
+   */
+  // Note - The bean is given a specific name in this case to support the injection of a bean of type List using @Value
+  @Bean(name = "httpMessageConverters")
+  @Autowired
+  public List<HttpMessageConverter<?>> httpMessageConverters(Marshaller marshaller) {
+    return Arrays.asList(new HttpMessageConverter<?>[] { new MarshallingHttpMessageConverter(marshaller) });
+  }
+
+  /**
+   * Creates and configures a {@link Marshaller} to be used for both marshalling and unmarshalling HTTP request and
+   * response bodies.
+   * <p>
+   * The created Marshaller is configured with a custom JAXB {@link javax.xml.bind.ValidationEventHandler} which
+   * supports logging not fatal validation errors that occur on unmarshalling, and optionally classifying them as fatal
+   * errors depending on the class of causal ('linked') exception.
+   * 
+   * @return The created {@link Marshaller}.
+   */
+  @Bean
+  public Marshaller marshaller() {
+    Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
+    CustomValidationEventHandler eventHandler = new CustomValidationEventHandler();
+    eventHandler.setLogWarningForNonFatalError(true);
+    List<Class<? extends Exception>> fatalExceptions = new ArrayList<>();
+    // Uncomment to treat failures to parse integer strings as fatal errors
+    // fatalExceptions.add(NumberFormatException.class);
+    // Uncomment to treat failures to parse date strings, and possibly others, as fatal errors
+    // fatalExceptions.add(IllegalArgumentException.class);
+    eventHandler.setFatalLinkedExceptions(fatalExceptions);
+    jaxb2Marshaller.setValidationEventHandler(eventHandler);
+    Package apiResourcesRootPackage = ChannelResource.class.getPackage();
+    jaxb2Marshaller.setPackagesToScan(new String[] { apiResourcesRootPackage.getName() });
+    return jaxb2Marshaller;
   }
 
   /**
