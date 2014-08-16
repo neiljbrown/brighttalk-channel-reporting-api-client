@@ -1,9 +1,17 @@
-/**
- * ****************************************************************************
- * Copyright BrightTALK Ltd, 2014.
- * All Rights Reserved.
- * $Id: $
- * ****************************************************************************
+/*
+ * Copyright 2014-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.brighttalk.channels.reportingapi.v1.client;
 
@@ -14,15 +22,15 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link NextPageUrl}.
+ * 
+ * @author Neil Brown
  */
 public class NextPageUrlTest {
 
   private static final String RESOURCE_URL = "https://api.test.brighttalk.net/v1/channel/1234/subscribers";
 
-  private static final String CURSOR_REQUEST_PARAM_NAME = ApiRequestParamName.Paging.CURSOR.getName();
+  private static final String CURSOR_REQUEST_PARAM_NAME = PagingRequestParamsBuilder.ParamName.CURSOR.getName();
   
-  private static final String FOO_REQUEST_PARAM_NAME = ApiRequestParamName.GetChannelSubscribersApi.SUBSCRIBED.getName();  
-
   /**
    * Tests {@link NextPageUrl#parse} in the error case where an invalid format URL is supplied.
    */
