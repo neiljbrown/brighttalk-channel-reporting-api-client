@@ -52,15 +52,13 @@ public class CustomValidationEventHandler implements ValidationEventHandler {
 
   private List<Class<? extends Exception>> fatalLinkedExceptions = new ArrayList<Class<? extends Exception>>();
 
-  private boolean logWarningForNonFatalError;
-
   /**
    * {@inheritDoc}
    * <p>
    * If the validation event severity is classified as being fatal then it is logged as an error and the method returns
    * {@code false} to signal that processing of the content should be terminated. Otherwise, the validation error is
-   * conditionally logged as a warning and the method returns {@code false} to indicate that processing should continue
-   * if possible.
+   * conditionally logged for info and the method returns {@code false} to indicate that processing should continue if
+   * possible.
    * 
    * @see #isValidationEventFatal(ValidationEvent)
    */
@@ -73,10 +71,8 @@ public class CustomValidationEventHandler implements ValidationEventHandler {
       // Signal that current processing (marshalling, unmarshalling or validation) should be terminated
       return false;
     }
-    if (this.logWarningForNonFatalError) {
-      logger.warn("JAXB validation error [{}]."
-          + (t != null ? " Causal ('linked') exception [" + t.toString() + "]." : ""), event);
-    }
+    logger.info("JAXB validation error [{}]."
+        + (t != null ? " Causal ('linked') exception [" + t.toString() + "]." : ""), event);
     // Signal that current processing should continue if possible
     return true;
   }
@@ -133,20 +129,5 @@ public class CustomValidationEventHandler implements ValidationEventHandler {
    */
   public final void setFatalLinkedExceptions(List<Class<? extends Exception>> fatalLinkedExceptions) {
     this.fatalLinkedExceptions = fatalLinkedExceptions;
-  }
-
-  /**
-   * @return the logWarningForNonFatalError
-   */
-  public final boolean isLogWarningForNonFatalError() {
-    return this.logWarningForNonFatalError;
-  }
-
-  /**
-   * @param logWarningForNonFatalError {@code true} if all (non-fatal) {@link ValidationEvent}s with a severity of
-   * {@link ValidationEvent#ERROR} should be logged as warnings. Defaults to {@code false}.
-   */
-  public final void setLogWarningForNonFatalError(boolean logWarningForNonFatalError) {
-    this.logWarningForNonFatalError = logWarningForNonFatalError;
   }
 }

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.bind.ValidationEvent;
+
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -59,6 +61,17 @@ public class AppConfig {
   private String apiUserKey;
   @Value("${apiuser.secret}")
   private String apiUserSecret;
+  
+  /**
+   * The classes of exception which should be treated as fatal if they occur as the root cause of a marshalling or
+   * unmmarshalling error reported to the application's configured JAXB ValidationEventHandler. Defaults to none (empty
+   * list), meaning that validation errors are not considered fatal, which is identical to the default behaviour in JAXB
+   * 2.0+.
+   * @see CustomValidationEventHandler
+   */
+  // Add NumberFormatException.class to treat failures to parse integer strings as fatal errors 
+  // Add IllegalArgumentException.class to treat failures to parse date strings, and possibly others, as fatal errors 
+  private List<Class<? extends Exception>> marshallingErrorFatalExceptions = new ArrayList<>();
 
   /**
    * @return The application's {@link PropertySourcesPlaceholderConfigurer}. Resolves ${...} placeholders used within
@@ -124,13 +137,7 @@ public class AppConfig {
   public Marshaller marshaller() {
     Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
     CustomValidationEventHandler eventHandler = new CustomValidationEventHandler();
-    eventHandler.setLogWarningForNonFatalError(true);
-    List<Class<? extends Exception>> fatalExceptions = new ArrayList<>();
-    // Uncomment to treat failures to parse integer strings as fatal errors
-    // fatalExceptions.add(NumberFormatException.class);
-    // Uncomment to treat failures to parse date strings, and possibly others, as fatal errors
-    // fatalExceptions.add(IllegalArgumentException.class);
-    eventHandler.setFatalLinkedExceptions(fatalExceptions);
+    eventHandler.setFatalLinkedExceptions(this.marshallingErrorFatalExceptions);
     jaxb2Marshaller.setValidationEventHandler(eventHandler);
     Package apiResourcesRootPackage = ChannelResource.class.getPackage();
     jaxb2Marshaller.setPackagesToScan(new String[] { apiResourcesRootPackage.getName() });
