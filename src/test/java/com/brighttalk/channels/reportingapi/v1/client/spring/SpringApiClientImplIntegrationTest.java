@@ -279,14 +279,13 @@ public class SpringApiClientImplIntegrationTest {
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
-    // Perform the test
-    try {
-      this.apiClient.getMyChannels(null);
-      fail("Expected an exception to be thrown.");
-    // Current behaviour, as exhibited by the JAXB RI, is to throw an exception on failing to parse integer string       
-    } catch (NumberFormatException e) {
-      assertTrue("Unexpected detail message for exception [" + e.toString() + "].", e.getMessage().matches(".*foo.*"));
-    }
+    // Default JAXB behaviour is to treat this as a non-fatal unmarshalling error, resulting in a default value field   
+    ChannelsResource channelsResource = this.apiClient.getMyChannels(null);
+    
+    this.mockReportingApiService.verify();
+    assertThat(channelsResource, notNullValue());
+    assertThat(channelsResource.getChannels(), hasSize(1));    
+    assertThat(channelsResource.getChannels().get(0).getId(), is(0));    
   }
 
   /**
@@ -308,7 +307,7 @@ public class SpringApiClientImplIntegrationTest {
     // Perform the test
     ChannelsResource channelsResource = this.apiClient.getMyChannels(null);
    
-    // Current behaviour, as exhibited by the JAXB RI, is to suppress the error, resulting in a null field
+    // Default JAXB behaviour is to treat this as a non-fatal unmarshalling error, resulting in a null field
     this.mockReportingApiService.verify();
     assertThat(channelsResource, notNullValue());
     assertThat(channelsResource.getChannels().get(0), notNullValue());
