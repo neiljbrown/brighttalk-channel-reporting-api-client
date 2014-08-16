@@ -29,6 +29,7 @@ import com.google.common.base.Objects;
 public class SurveyResponseResource {
   @XmlAttribute
   private int id;
+  private SurveyResource survey;
   private User user;
   @XmlElementWrapper(name = "questions")
   @XmlElement(name = "question")
@@ -42,9 +43,10 @@ public class SurveyResponseResource {
   private SurveyResponseResource() {
   }
 
-  public SurveyResponseResource(int id, User user, List<Question> questions, Date created, Date lastUpdated,
-      List<Link> links) {
+  public SurveyResponseResource(int id, SurveyResource survey, User user, List<Question> questions, Date created,
+      Date lastUpdated, List<Link> links) {
     this.id = id;
+    this.survey = survey;
     this.user = user;
     this.questions = questions;
     this.created = created;
@@ -55,6 +57,8 @@ public class SurveyResponseResource {
   public final int getId() {
     return this.id;
   }
+  
+  
 
   public final User getUser() {
     return this.user;
@@ -81,6 +85,7 @@ public class SurveyResponseResource {
     /* @formatter:off */    
     return Objects.toStringHelper(this).omitNullValues()
       .add("id", this.id)
+      .add("survey", this.survey)      
       .add("user", this.user)
       .add("questions", this.questions)
       .add("created", this.created)
@@ -90,6 +95,10 @@ public class SurveyResponseResource {
     /* @formatter:on */
   }
 
+  /** 
+   * {@inheritDoc}
+   */
+  // Auto-generated
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -99,10 +108,15 @@ public class SurveyResponseResource {
     result = prime * result + ((this.lastUpdated == null) ? 0 : this.lastUpdated.hashCode());
     result = prime * result + ((this.links == null) ? 0 : this.links.hashCode());
     result = prime * result + ((this.questions == null) ? 0 : this.questions.hashCode());
+    result = prime * result + ((this.survey == null) ? 0 : this.survey.hashCode());
     result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
     return result;
   }
 
+  /** 
+   * {@inheritDoc}
+   */
+  // Auto-generated  
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -111,7 +125,7 @@ public class SurveyResponseResource {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!(obj instanceof SurveyResponseResource)) {
       return false;
     }
     SurveyResponseResource other = (SurveyResponseResource) obj;
@@ -146,6 +160,13 @@ public class SurveyResponseResource {
     } else if (!this.questions.equals(other.questions)) {
       return false;
     }
+    if (this.survey == null) {
+      if (other.survey != null) {
+        return false;
+      }
+    } else if (!this.survey.equals(other.survey)) {
+      return false;
+    }
     if (this.user == null) {
       if (other.user != null) {
         return false;
@@ -154,5 +175,5 @@ public class SurveyResponseResource {
       return false;
     }
     return true;
-  }
+  }  
 }

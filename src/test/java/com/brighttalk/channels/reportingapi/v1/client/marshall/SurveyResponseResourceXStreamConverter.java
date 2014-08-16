@@ -14,6 +14,7 @@ import java.util.List;
 import com.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Link;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Question;
+import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
 import com.thoughtworks.xstream.converters.Converter;
@@ -46,6 +47,7 @@ public class SurveyResponseResourceXStreamConverter implements Converter {
   public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
     int id = Integer.valueOf(reader.getAttribute("id"));
     List<Question> questions = null;
+    SurveyResource survey = null;
     User user = null;
     String created = null;
     String lastUpdated = null;
@@ -53,7 +55,9 @@ public class SurveyResponseResourceXStreamConverter implements Converter {
     while (reader.hasMoreChildren()) {
       reader.moveDown();
       String nodeName = reader.getNodeName();
-      if ("user".equals(nodeName)) {
+      if ("survey".equals(nodeName)) {
+        survey = (SurveyResource) context.convertAnother(null, SurveyResource.class);
+      } else if ("user".equals(nodeName)) {
         user = (User) context.convertAnother(null, User.class);
       } else if ("questions".equals(nodeName)) {
         if (questions == null) {
@@ -81,6 +85,6 @@ public class SurveyResponseResourceXStreamConverter implements Converter {
     ApiDateTimeFormatter dateTimeFormatter = new ApiDateTimeFormatter();
     Date createdDate = created != null ? dateTimeFormatter.parse(created) : null;
     Date lastUpdatedDate = lastUpdated != null ? dateTimeFormatter.parse(lastUpdated) : null;
-    return new SurveyResponseResource(id, user, questions, createdDate, lastUpdatedDate, links);    
+    return new SurveyResponseResource(id, survey, user, questions, createdDate, lastUpdatedDate, links);    
   }
 }

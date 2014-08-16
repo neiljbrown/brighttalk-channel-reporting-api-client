@@ -7,7 +7,6 @@
  */
 package com.brighttalk.channels.reportingapi.v1.client.marshall;
 
-
 import com.brighttalk.channels.reportingapi.v1.client.resource.User;
 import com.brighttalk.channels.reportingapi.v1.client.resource.UserRealm;
 import com.thoughtworks.xstream.converters.Converter;
@@ -23,7 +22,7 @@ public class UserXStreamConverter implements Converter {
 
   /** {@inheritDoc} */
   @Override
-  @SuppressWarnings("rawtypes")  
+  @SuppressWarnings("rawtypes")
   public boolean canConvert(Class type) {
     return type.equals(User.class);
   }
@@ -43,6 +42,7 @@ public class UserXStreamConverter implements Converter {
     String realmUserId = null;
     String firstName = null;
     String lastName = null;
+    String timeZone = null;
     String phone = null;
     String jobTitle = null;
     String level = null;
@@ -64,6 +64,8 @@ public class UserXStreamConverter implements Converter {
         firstName = reader.getValue();
       } else if ("lastName".equals(nodeName)) {
         lastName = reader.getValue();
+      } else if ("timeZone".equals(nodeName)) {
+        timeZone = reader.getValue();
       } else if ("phone".equals(nodeName)) {
         phone = reader.getValue();
       } else if ("jobTitle".equals(nodeName)) {
@@ -71,7 +73,7 @@ public class UserXStreamConverter implements Converter {
       } else if ("level".equals(nodeName)) {
         level = reader.getValue();
       } else if ("companyName".equals(nodeName)) {
-        companyName = reader.getValue();        
+        companyName = reader.getValue();
       } else if ("companySize".equals(nodeName)) {
         companySize = reader.getValue();
       } else if ("industry".equals(nodeName)) {
@@ -83,7 +85,7 @@ public class UserXStreamConverter implements Converter {
       }
       reader.moveUp();
     }
-    return new User(id, email, userRealm, realmUserId, firstName, lastName, phone, jobTitle, level, companyName, 
-        companySize, industry, country, stateProvince);    
+    return new User(id, email, userRealm, realmUserId, firstName, lastName, timeZone, phone, jobTitle, level,
+        companyName, companySize, industry, country, stateProvince);
   }
 }

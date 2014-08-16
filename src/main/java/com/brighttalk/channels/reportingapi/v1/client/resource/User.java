@@ -25,6 +25,7 @@ public class User {
   private String realmUserId;
   private String firstName;
   private String lastName;
+  private String timeZone;
   private String phone;
   private String jobTitle;
   private String level;
@@ -33,20 +34,21 @@ public class User {
   private String industry;
   private String country;
   private String stateProvince;
-  
+
   // Private, as only exists only to keep JAXB implementation happy.
   private User() {
-  }    
-  
+  }
+
   public User(int id, String email, UserRealm realm, String realmUserId, String firstName, String lastName,
-      String phone, String jobTitle, String level, String companyName, String companySize, String industry,
-      String country, String stateProvince) {
+      String timeZone, String phone, String jobTitle, String level, String companyName, String companySize,
+      String industry, String country, String stateProvince) {
     this.id = id;
     this.email = email;
     this.realm = realm;
     this.realmUserId = realmUserId;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.timeZone = timeZone;
     this.phone = phone;
     this.jobTitle = jobTitle;
     this.level = level;
@@ -80,6 +82,10 @@ public class User {
   public final String getLastName() {
     return this.lastName;
   }
+  
+  public final String getTimeZone() {
+    return this.timeZone;
+  }
 
   public final String getPhone() {
     return this.phone;
@@ -112,7 +118,7 @@ public class User {
   public final String getStateProvince() {
     return this.stateProvince;
   }
-  
+
   @Override
   public String toString() {
     /* @formatter:off */    
@@ -123,6 +129,7 @@ public class User {
       .add("realmUserId", this.realmUserId) 
       .add("firstName", this.firstName)      
       .add("lastName", this.lastName)
+      .add("timeZone", this.timeZone)
       .add("phone", this.phone)      
       .add("jobTitle", this.jobTitle)      
       .add("level", this.level)
@@ -132,9 +139,13 @@ public class User {
       .add("country", this.country)
       .add("stateProvince", this.stateProvince)      
       .toString();
-    /* @formatter:on */    
+    /* @formatter:on */
   }
 
+  /** 
+   * {@inheritDoc}
+   */
+  // Auto-generated  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -153,9 +164,14 @@ public class User {
     result = prime * result + ((this.realm == null) ? 0 : this.realm.hashCode());
     result = prime * result + ((this.realmUserId == null) ? 0 : this.realmUserId.hashCode());
     result = prime * result + ((this.stateProvince == null) ? 0 : this.stateProvince.hashCode());
+    result = prime * result + ((this.timeZone == null) ? 0 : this.timeZone.hashCode());
     return result;
   }
 
+  /** 
+   * {@inheritDoc}
+   */
+  // Auto-generated
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -164,7 +180,7 @@ public class User {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!(obj instanceof User)) {
       return false;
     }
     User other = (User) obj;
@@ -262,6 +278,13 @@ public class User {
     } else if (!this.stateProvince.equals(other.stateProvince)) {
       return false;
     }
+    if (this.timeZone == null) {
+      if (other.timeZone != null) {
+        return false;
+      }
+    } else if (!this.timeZone.equals(other.timeZone)) {
+      return false;
+    }
     return true;
-  }    
+  }
 }
