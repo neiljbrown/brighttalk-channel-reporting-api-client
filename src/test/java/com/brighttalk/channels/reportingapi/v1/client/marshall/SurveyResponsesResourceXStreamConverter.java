@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.brighttalk.channels.reportingapi.v1.client.resource.Link;
-import com.brighttalk.channels.reportingapi.v1.client.resource.SubscriberWebcastActivityResource;
-import com.brighttalk.channels.reportingapi.v1.client.resource.SubscribersWebcastActivityResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponseResource;
 import com.brighttalk.channels.reportingapi.v1.client.resource.SurveyResponsesResource;
 import com.thoughtworks.xstream.converters.Converter;

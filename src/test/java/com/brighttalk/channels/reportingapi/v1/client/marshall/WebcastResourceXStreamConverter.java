@@ -21,7 +21,6 @@ import java.util.List;
 
 import com.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.brighttalk.channels.reportingapi.v1.client.resource.Link;
-import com.brighttalk.channels.reportingapi.v1.client.resource.Question;
 import com.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;

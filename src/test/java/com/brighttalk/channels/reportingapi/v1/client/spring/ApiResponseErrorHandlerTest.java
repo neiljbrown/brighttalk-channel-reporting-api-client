@@ -16,19 +16,12 @@
 package com.brighttalk.channels.reportingapi.v1.client.spring;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
