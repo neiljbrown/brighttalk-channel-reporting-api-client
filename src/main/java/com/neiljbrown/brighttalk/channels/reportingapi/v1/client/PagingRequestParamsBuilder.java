@@ -63,8 +63,7 @@ public class PagingRequestParamsBuilder {
       return;
     }
     if (pageCriteria.getNextPageUrl() != null) {
-      NextPageUrl nextPageUrl = NextPageUrl.parse(pageCriteria.getNextPageUrl());
-      this.params.put(ParamName.CURSOR.getName(), nextPageUrl.getCursor());
+      this.params.put(ParamName.CURSOR.getName(), pageCriteria.getNextPageUrl().getCursor());
     }
     if (pageCriteria.getPageSize() != null) {
       this.params.put(ParamName.PAGE_SIZE.getName(), pageCriteria.getPageSize().toString());

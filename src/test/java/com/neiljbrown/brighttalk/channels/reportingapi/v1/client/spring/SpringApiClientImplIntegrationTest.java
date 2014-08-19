@@ -95,8 +95,6 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingsResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.AppConfig;
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.SpringApiClientImpl;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -220,16 +218,12 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsWhenNextPageWithNonDefaultPageSizeReturnsLastPage() throws Exception {
-    // Construct page criteria to use in test
     int pageSize = 50;
-    String nextPageUrlString = "https://api.test.brighttalk.net/v1/user/1/channels?cursor=1234&amp;pageSize=200";
-    NextPageUrl nextPageUrl = NextPageUrl.parse(nextPageUrlString);
-    PageCriteria pageCriteria = new PageCriteria(pageSize, nextPageUrlString);
+    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
-        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?cursor=" + nextPageUrl.getCursor() + "&pageSize="
-        + pageSize;
     Resource responseBody = new ClassPathResource(
         "SpringApiClientImplTest.getMyChannelsNextPageWithNonDefaultPageSizeReturnsLastPageSingleChannel-response.xml",
         this.getClass());
@@ -291,13 +285,13 @@ public class SpringApiClientImplIntegrationTest {
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
-    // Default JAXB behaviour is to treat this as a non-fatal unmarshalling error, resulting in a default value field   
+    // Default JAXB behaviour is to treat this as a non-fatal unmarshalling error, resulting in a default value field
     ChannelsResource channelsResource = this.apiClient.getMyChannels(null);
-    
+
     this.mockReportingApiService.verify();
     assertThat(channelsResource, notNullValue());
-    assertThat(channelsResource.getChannels(), hasSize(1));    
-    assertThat(channelsResource.getChannels().get(0).getId(), is(0));    
+    assertThat(channelsResource.getChannels(), hasSize(1));
+    assertThat(channelsResource.getChannels().get(0).getId(), is(0));
   }
 
   /**
@@ -312,18 +306,19 @@ public class SpringApiClientImplIntegrationTest {
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getMyChannelsInvalidResponseTypeMismatchChannelCreatedDate-response.xml", this.getClass());
+        "SpringApiClientImplTest.getMyChannelsInvalidResponseTypeMismatchChannelCreatedDate-response.xml",
+        this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
     ChannelsResource channelsResource = this.apiClient.getMyChannels(null);
-   
+
     // Default JAXB behaviour is to treat this as a non-fatal unmarshalling error, resulting in a null field
     this.mockReportingApiService.verify();
     assertThat(channelsResource, notNullValue());
     assertThat(channelsResource.getChannels().get(0), notNullValue());
-    assertThat(channelsResource.getChannels().get(0).getCreated(), nullValue());    
+    assertThat(channelsResource.getChannels().get(0).getCreated(), nullValue());
   }
 
   /**
@@ -458,7 +453,7 @@ public class SpringApiClientImplIntegrationTest {
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?subscribed=" + subscribed + "&subscribedSince="
         + subscribedSinceAsString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -499,7 +494,7 @@ public class SpringApiClientImplIntegrationTest {
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?unsubscribedSince=" + unsubscribedSinceAsString
         + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -641,7 +636,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -686,7 +681,7 @@ public class SpringApiClientImplIntegrationTest {
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -730,7 +725,7 @@ public class SpringApiClientImplIntegrationTest {
         + SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -841,11 +836,11 @@ public class SpringApiClientImplIntegrationTest {
     // Relies on overridden SurveyResource.equals() to test for equality by value
     assertThat(surveyResource, is(expectedSurveyResource));
   }
-  
+
   /**
-   * Tests {@link SpringApiClientImpl#getSurvey} in the case where the API service returns a response containing a
-   * field value which cannot be converted to the expected type as defined in the API resource class. In this case,
-   * return of a {@link SurveyResource} with an active field which can't be converted to a boolean is tested.
+   * Tests {@link SpringApiClientImpl#getSurvey} in the case where the API service returns a response containing a field
+   * value which cannot be converted to the expected type as defined in the API resource class. In this case, return of
+   * a {@link SurveyResource} with an active field which can't be converted to a boolean is tested.
    */
   @Test
   public void getSurveyWhenInvalidResponseTypeMismatchActive() {
@@ -861,12 +856,12 @@ public class SpringApiClientImplIntegrationTest {
 
     // Perform the test
     SurveyResource surveyResource = this.apiClient.getSurvey(surveyId);
-    
+
     // Current behaviour, as exhibited by the JAXB RI, is to suppress the error, resulting in default field value
     this.mockReportingApiService.verify();
     assertThat(surveyResource, notNullValue());
-    assertThat(surveyResource.isActive(), is(false));    
-  }  
+    assertThat(surveyResource.isActive(), is(false));
+  }
 
   /**
    * Tests {@link SpringApiClientImpl#getSurveyResponses} when the request is for the first page of all the survey
@@ -942,7 +937,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl()
         + SurveyResponsesResource.RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
-    PageCriteria pageCriteria = new PageCriteria(expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -1041,7 +1036,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUrl() + WebcastsResource.RELATIVE_URI_TEMPLATE
         + "?since=" + sinceString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -1182,7 +1177,7 @@ public class SpringApiClientImplIntegrationTest {
         + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&viewed="
         + viewed + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -1311,7 +1306,7 @@ public class SpringApiClientImplIntegrationTest {
         + WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&webcastStatus="
         + webcastStatus.toString() + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, expectedRequestUrl);
+    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
