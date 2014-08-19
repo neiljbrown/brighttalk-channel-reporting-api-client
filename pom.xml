@@ -2,13 +2,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.brighttalk.channels</groupId>
+  <groupId>com.neiljbrown.brighttalk.channels</groupId>
   <artifactId>brighttalk-channel-owner-reporting-api-v1-client</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>brighttalk-channel-owner-reporting-api-v1-client</name>
-  <description>Client for vesion 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>  
+  <description>Client for version 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>  
   <url>https://bitbucket.org/neilbrown</url>
 
   <properties>
@@ -94,5 +94,18 @@
       <version>3.2</version>
       <scope>test</scope>      
     </dependency>
-  </dependencies>
+  </dependencies>  
+  <build>
+    <plugins>
+      <!-- Enable use of Java 7 language features, overriding default of 1.5 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>7</source>
+          <target>7</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>      
 </project>
