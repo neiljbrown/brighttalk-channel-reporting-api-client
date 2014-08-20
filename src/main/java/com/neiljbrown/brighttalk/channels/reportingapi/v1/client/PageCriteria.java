@@ -17,10 +17,6 @@ package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
 
 /**
  * Encapsulates the paging criteria for all paged reporting APIs, e.g. those which return collections of resources.
- * <P>
- * TODO - Consider whether to support next page API calls through the supply of a ResourceLink DTO (with validation of
- * its relation type) rather than the next page URL. Does that have the benefit of avoiding the need for the user of the
- * API client to have to extract URL from href attribute? Do we want to couple this class to the ResourceLink DTO?
  * 
  * @author Neil Brown
  */

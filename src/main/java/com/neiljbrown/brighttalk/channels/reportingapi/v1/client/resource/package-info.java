@@ -15,7 +15,8 @@
  */
 /**
  * Package containing the classes which make up the BrightTALK reporting API resource model - the RESTful 
- * resource-oriented view of the BrightTALK domain.
+ * resource-oriented view of the BrightTALK domain. Classes are given the 'Resource' suffix to make it easier to 
+ * use them in conjunction with similarly named domain objects in utilising applications.
  */
 // Use a custom JAXB XmlAdapter for unmarshalling integer strings to overcome a bug in the one supplied in the JAXB RI
 @XmlJavaTypeAdapter(type = int.class, value = IntegerXmlAdapter.class)

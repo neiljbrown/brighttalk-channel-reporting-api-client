@@ -69,11 +69,6 @@ public class SpringApiClientImpl implements ApiClient {
 
   /**
    * Creates a new instance of the API client.
-   * <p>
-   * TODO - Consider adding support for supplying the media type to use for the request Accept header. What is
-   * RestTemplate's default behaviour if an Accept header is not explicitly set? The +getForXXX() methods set an Accept
-   * header by default based on the configured underlying HTTP message converts, but how does it decide which of the
-   * media types take precedence?
    * 
    * @param apiServerBaseUrl A {@link URL} specifying the protocol, hostname and optional port of the API server for a
    * given environment.

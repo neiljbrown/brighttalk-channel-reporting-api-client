@@ -32,7 +32,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
 /**
  * A client for accessing the BrightTALK channel owner reporting API (version 1.x).
  * <p>
- * TODO @see <a href="...">BrightTALK channel owner reporting API technical specification</a>
+ * TODO @see <a href="...">BrightTALK Channel Owner Reporting APIs V1 - Technical specification</a>
  * 
  * @author Neil Brown
  */
