@@ -41,12 +41,14 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ApiErr
 
 /**
  * Implementation of {@link org.springframework.web.client.ResponseErrorHandler} for responses returned by the
- * BrightTALK Channel owner reporting API. Replaces Spring's {@link DefaultResponseErrorHandler} to translate HTTP error
- * responses (as indicated by status code) to {@link ApiErrorResponseException} rather than exposing Spring's
- * {@link HttpStatusCodeException}. Also supports unmarshalling the supplementary, custom error information returned by
- * the API in the response body to an {@link ApiError} object, and making it available in the thrown Exception.
+ * BrightTALK Channel owner reporting API. Replaces Spring's
+ * {@link org.springframework.web.client.DefaultResponseErrorHandler} to translate HTTP error responses (as indicated by
+ * status code) to {@link ApiErrorResponseException} rather than exposing Spring's
+ * {@link org.springframework.web.client.HttpStatusCodeException}. Also supports unmarshalling the supplementary, custom
+ * error information returned by the API in the response body to an {@link ApiError} object, and making it available in
+ * the thrown Exception.
  * 
- * @see DefaultResponseErrorHandler
+ * @see org.springframework.web.client.DefaultResponseErrorHandler
  * @see com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiErrorResponseException
  * @author Neil Brown
  */
@@ -159,13 +161,13 @@ public class ApiResponseErrorHandler implements ResponseErrorHandler {
     } catch (RestClientException e) {
       // The response body was in a media-type which couldn't be unmarshalled by the configured HttpMessageConverter
       // This can happen when a web proxy returns the error response and includes e.g. an HTML error page
-      // Suppress this error - treat it like an empty respnonse.      
-      logger.debug("Error extracting API error from response body. Ignoring.", e);      
+      // Suppress this error - treat it like an empty respnonse.
+      logger.debug("Error extracting API error from response body. Ignoring.", e);
     } catch (HttpMessageNotReadableException e) {
-      // The response body was in a supported media type but contained an unexpected entity which couldn't be 
+      // The response body was in a supported media type but contained an unexpected entity which couldn't be
       // unmarshalled. This could happen if a web proxy returned the error response.
       // Suppress this error - treat like an empty respnonse.
-      logger.debug("Error extracting API error from response body. Unknown entity. Ignoring.", e);      
+      logger.debug("Error extracting API error from response body. Unknown entity. Ignoring.", e);
     } catch (IOException e) {
       throw new ApiClientException("I/O error on extracting API error from response body.", e);
     }

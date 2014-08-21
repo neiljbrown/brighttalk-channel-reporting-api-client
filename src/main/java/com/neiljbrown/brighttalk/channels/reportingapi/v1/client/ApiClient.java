@@ -152,7 +152,7 @@ public interface ApiClient {
    * the specified UTC date / time.
    * @param pageCriteria Optional {@link PageCriteria page criteria}.
    * @return A {@link WebcastsResource} containing a collection of zero or more {@link 
-   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource webcasts).
+   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastResource webcasts}.
    * @throws ApiClientException If an error occurs on making the API call.
    */
   WebcastsResource getWebcastsForChannel(int channelId, Date since, PageCriteria pageCriteria)
@@ -180,7 +180,7 @@ public interface ApiClient {
    * have not yet viewed.
    * @param pageCriteria Optional {@link PageCriteria page criteria}. 
    * @return A {@link WebcastRegistrationsResource} containing a collection of zero or more {@link 
-   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastRegistrationResource webcast registration).
+   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastRegistrationResource webcast registration}.
    * @throws ApiClientException If an error occurs on making the API call.
    */
   WebcastRegistrationsResource getWebcastRegistrationsForWebcast(int channelId, int webcastId, Date since,
@@ -196,7 +196,7 @@ public interface ApiClient {
    * took place. Must be one of supported status {@link WebcastStatus#LIVE} or {@link WebcastStatus#RECORDED}.
    * @param pageCriteria Optional {@link PageCriteria page criteria}.    
    * @return A {@link WebcastViewingsResource} containing a collection of zero or more {@link 
-   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast vieiwng).
+   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast viewing}.
    * @throws IllegalArgumentException If {@code webcastStatus} is not one of the status supported by this API.
    * @throws ApiClientException If an error occurs on making the API call.
    */
@@ -214,7 +214,7 @@ public interface ApiClient {
    * took place. Must be one of supported status {@link WebcastStatus#LIVE} or {@link WebcastStatus#RECORDED}.
    * @param pageCriteria Optional {@link PageCriteria page criteria}.    
    * @return A {@link WebcastViewingsResource} containing a collection of zero or more {@link 
-   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast vieiwng).
+   * com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource webcast viewing}.
    * @throws IllegalArgumentException If {@code webcastStatus} is not one of the status supported by this API.
    * @throws ApiClientException If an error occurs on making the API call.
    */

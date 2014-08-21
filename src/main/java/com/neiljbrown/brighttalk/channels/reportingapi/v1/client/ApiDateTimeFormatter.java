@@ -28,7 +28,7 @@ import com.google.common.base.Preconditions;
  * <p>
  * Dates and times exchanged with the reporting APIs are always in the UTC time zone and are formatted using a
  * simplified subset of the ISO 8601 standard. See patterns {@link #API_DATE_TIME_PATTERN} and
- * {@link API_DATE_ONLY_PATTERN}.
+ * {@link #API_DATE_ONLY_PATTERN}.
  * <p>
  * Thread-safe.
  * 

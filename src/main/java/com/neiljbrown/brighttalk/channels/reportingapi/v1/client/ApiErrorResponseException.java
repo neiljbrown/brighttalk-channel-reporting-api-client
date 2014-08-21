@@ -45,8 +45,8 @@ public class ApiErrorResponseException extends HttpErrorResponseException {
    * @param responseHeaders The HTTP response headers.
    * @param responseCharset The character set of the HTTP response body.
    * @param responseBody The HTTP response body.
-   * @param apiError The {@link API error} returned in the response, or null if not present because the error response
-   * was returned by an intermediate web server/proxy.
+   * @param apiError The {@link ApiError API error} returned in the response, or null if not present because the error
+   * response was returned by an intermediate web server/proxy.
    */
   public ApiErrorResponseException(int statusCode, String statusText, Map<String, List<String>> responseHeaders,
       Charset responseCharset, byte[] responseBody, ApiError apiError) {

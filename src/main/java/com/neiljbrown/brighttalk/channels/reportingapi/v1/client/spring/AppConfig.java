@@ -47,9 +47,9 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 
 /**
  * An instance of a {@link Configuration Spring Java Config} class which declares the objects used by the
- * {@link com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.SpringApiClientImpl Spring implementation of the API
- * client}, which are to be managed by the Spring container, using {@link Bean} annotated methods, and wires-up the
- * dependencies of these beans. (The Java equivalent of more traditional XML-based Spring bean configuration).
+ * {@link com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.SpringApiClientImpl Spring implementation of
+ * the API client}, which are to be managed by the Spring container, using {@link Bean} annotated methods, and wires-up
+ * the dependencies of these beans. (The Java equivalent of more traditional XML-based Spring bean configuration).
  * <p>
  * Services which use the Spring implementation of the API client can utilise this bean configuration if they wish by
  * importing it into their own Spring (XML or Java) configuration using &lt;import&gt; or @Import and @Autowired
@@ -69,22 +69,23 @@ public class AppConfig {
   private String apiUserKey;
   @Value("${apiuser.secret}")
   private String apiUserSecret;
-  
+
   /**
    * The classes of exception which should be treated as fatal if they occur as the root cause of a marshalling or
    * unmmarshalling error reported to the application's configured JAXB ValidationEventHandler. Defaults to none (empty
    * list), meaning that validation errors are not considered fatal, which is identical to the default behaviour in JAXB
    * 2.0+.
+   * 
    * @see CustomValidationEventHandler
    */
-  // Add NumberFormatException.class to treat failures to parse integer strings as fatal errors 
-  // Add IllegalArgumentException.class to treat failures to parse date strings, and possibly others, as fatal errors 
+  // Add NumberFormatException.class to treat failures to parse integer strings as fatal errors
+  // Add IllegalArgumentException.class to treat failures to parse date strings, and possibly others, as fatal errors
   private List<Class<? extends Exception>> marshallingErrorFatalExceptions = new ArrayList<>();
 
   /**
    * @return The application's {@link PropertySourcesPlaceholderConfigurer}. Resolves ${...} placeholders used within
-   * bean definition property values and @Value annotations using the current Spring {@link Environment} which itself
-   * has been loaded from declared PropertySource(s).
+   * bean definition property values and @Value annotations using the current Spring
+   * {@link org.springframework.core.env.Environment} which itself has been loaded from declared PropertySource(s).
    */
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -119,8 +120,9 @@ public class AppConfig {
    * RestTemplate to support the supply of a custom configured marshaller. The list of created HTTP message converter
    * will include a {@link MarshallingHttpMessageConverter} that uses the supplied {@link Marshaller}.
    * 
-   * @param marshaller The pre-configured {@link Marshaller} that the created {@link MarshallingHttpMessageConverter}
-   * should use. Must also support unmarshalling, by implementing {@link Unmarshaller}.
+   * @param marshaller The pre-configured {@link org.springframework.oxm.Marshaller} that the created
+   * {@link MarshallingHttpMessageConverter} should use. Must also support unmarshalling, by implementing
+   * {@link org.springframework.oxm.Unmarshaller}.
    * 
    * @return The created list of {@link HttpMessageConverter}.
    */

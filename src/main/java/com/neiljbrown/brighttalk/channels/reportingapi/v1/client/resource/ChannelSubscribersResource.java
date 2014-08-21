@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.google.common.base.Objects;
 
 /**
- * A collection of {@link ChannelSubscriber channel subscribers}.
+ * A collection of {@link ChannelSubscriberResource channel subscribers}.
  * 
  * @author Neil Brown
  */

@@ -96,7 +96,7 @@ public class CustomValidationEventHandler implements ValidationEventHandler {
    * 
    * @param event The current event.
    * @return {@code true} if the event is fatal, otherwise {@code false}.
-   * @see {@link #setFatalLinkedExceptions(List)}
+   * @see #setFatalLinkedExceptions
    */
   private boolean isValidationEventFatal(ValidationEvent event) {
     final int severity = event.getSeverity();
