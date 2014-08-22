@@ -1,5 +1,7 @@
 .checkstyle
 .classpath
+.gradle
 .project
 .settings
+build
 target

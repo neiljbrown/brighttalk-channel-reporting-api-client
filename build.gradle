@@ -1,0 +1,51 @@
+buildscript {
+  ext {
+    orgSpringframeworkVersion = '4.0.6.RELEASE'
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar {
+  baseName = 'brighttalk-channel-owner-reporting-api-v1-client'
+  version =  '0.0.1-SNAPSHOT'
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  // Compile-time dependencies  
+  compile("com.google.guava:guava:16.0.1")
+  compile("org.slf4j:slf4j-api:1.7.7")  
+  // Spring framework modules for Spring implementation of API client based on RestTemplate
+  // spring-web module for RestTemplate et al.
+  compile("org.springframework:spring-web:${orgSpringframeworkVersion}")
+  // spring-oxm module for Marshaller classes etc.
+  compile("org.springframework:spring-oxm:${orgSpringframeworkVersion}")
+  compile("org.apache.httpcomponents:httpclient:4.3.3")  
+  
+  // Test dependencies
+  testCompile("junit:junit:4.11")
+  testCompile("org.hamcrest:hamcrest-library:1.3")
+  testCompile("org.springframework:spring-test:${orgSpringframeworkVersion}")
+  testCompile("com.thoughtworks.xstream:xstream:1.4.7")
+  // Use an SLF4J-binding of logback-classic for testing purposes, but avoid imposing it as a dependency upon 
+  // users of the app by declaring the scope of the dependency of 'test' only
+  testCompile("ch.qos.logback:logback-classic:1.1.2")
+  testCompile("org.easymock:easymock:3.2")
+
+  // Runtime dependencies  
+  // Spring framework modules for Spring implementation of API client based on RestTemplate
+  // spring-context module for creating a Spring application context and dependency injection.
+  runtime("org.springframework:spring-context:${orgSpringframeworkVersion}")       
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.12'
+}
+
+eclipse.classpath.downloadJavadoc = true // defaults to 'false'
