@@ -1,0 +1,52 @@
+<!--
+ * *********************************************************************************************************************
+ * Copyright BrightTALK Ltd, 2014.
+ * All Rights Reserved.
+ * $Id:$ 
+ *
+ * Production copy of configuration for the logback logging framework.  
+ * For help with configuration syntax see the logback manual - http://logback.qos.ch/manual/configuration.html
+ * Formatting characters used in patterns are documented in http://logback.qos.ch/manual/layouts.html
+ * 
+ * TODO:
+ * 1) Include mapped diagnostic context in pattern. Using %mdc or %X breaks formatting. Maybe because not initialised?
+ * 2) Investigate support for using Syslog, or add a file based appender.
+ *  
+ * *********************************************************************************************************************
+-->
+<configuration scan="true" scanPeriod="10 seconds" debug="false">
+  <!-- Context name distinguishes application in shared log destination. Can be used for syslogtag -->
+  <contextName>btalk-cor-api-client</contextName>
+
+  <!-- Enable dynamic management of logback via its JMX interface -->
+  <jmxConfigurator />
+
+  <!-- Appender supporting writing to stdout / console -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <!-- TODO: Inclusion of mapped diagnostic context using %mdc or %X breaks formatting. Maybe because not initialised? -->
+      <pattern>%contextName: %date{ISO8601} [%thread] %-5level %logger{36} - %msg%n</pattern>      
+    </encoder>
+  </appender>
+                
+  <!-- Default 'root' logger -->               
+  <root level="info">
+    <appender-ref ref="STDOUT" />
+  </root>
+  
+  <!-- Logger for all BrightTALK reporting API client classes -->
+  <logger name="com.neiljbrown.brighttalk.channels.reportingapi" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>      
+
+  <!-- Loggers for Apache HTTP Client. Ref. https://hc.apache.org/httpcomponents-client-ga/logging.html -->
+  <logger name="org.apache.http" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
+  <logger name="org.apache.http.headers" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
+  <logger name="org.apache.http.wire" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>  
+</configuration>
