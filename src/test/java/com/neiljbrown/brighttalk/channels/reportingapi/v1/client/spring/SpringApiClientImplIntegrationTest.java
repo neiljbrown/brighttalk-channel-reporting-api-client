@@ -27,6 +27,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
 
@@ -98,23 +99,23 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
 import com.thoughtworks.xstream.XStream;
 
 /**
- * Integration tests for the {@link SpringApiClientImpl} implementation of the Get My Channels APIs.
+ * Integration tests for {@link SpringApiClientImpl}.
  * <p>
  * These tests load the application's Spring application context using the {@link SpringJUnit4ClassRunner}. In addition
  * to testing the Spring bean configuration, this tests the use of the production configured instance of the
  * RestTemplate.
  * <p>
  * The test case uses the Spring MVC Test framework’s {@link MockRestServiceServer} to provide a dynamically mocked
- * implementation of the Reporting API service, and a fluent API for asserting expected API requests, and specifying
- * stubbed responses. When using the MockRestServiceServer, the RestTemplate is exercised exactly as it would be if it
- * were making HTTP requests to the real API service. The test coverage provided by these unit tests therefore include
- * marshalling and unmarshalling the HTTP request and response bodies, exercising the API resource objects (DTOs) and
- * their configured marshallers and marshalling annotations in the process.
+ * implementation of the BrightTALK Reporting API service, assert the expected API requests, and specify stubbed
+ * responses. When using the MockRestServiceServer, the RestTemplate is exercised exactly as it would be if it were
+ * making HTTP requests to the real API service. The test coverage provided by these tests therefore include marshalling
+ * and unmarshalling the HTTP request and response bodies, exercising the API resource objects (DTOs) and their
+ * configured marshallers and marshalling annotations in the process.
  * <p>
  * The MockRestServiceServer works by substituting the Spring {@link ClientHttpRequestFactory} for a mock
- * implementation. As a consequence, the coverage of these unit tests does NOT extend as far as testing the production
- * HTTP client and its configuration (e.g. support for basic auth and compression). This requires a separate set of,
- * end-to-end integration tests.
+ * implementation. As a consequence, the coverage of these tests does NOT extend as far as testing the production HTTP
+ * client and its configuration (e.g. support for basic auth and compression). This requires a separate set of,
+ * (end-to-end integration or functional) tests.
  * 
  * @author Neil Brown
  */
@@ -134,12 +135,12 @@ public class SpringApiClientImplIntegrationTest {
   private RestTemplate restTemplate;
 
   /**
-   * Dynamic mock implementation of the Reporting API service, implemented using the Spring MVC Test framework’s
-   * {@link MockRestServiceServer}.
+   * Dynamic mock implementation of the BrightTALK Reporting API service, implemented using the Spring MVC Test
+   * framework’s {@link MockRestServiceServer}.
    */
   private MockRestServiceServer mockReportingApiService;
 
-  /** Instance of {@link XStream} used to unmarshall (deserialise) canned files of API response payloads used by tests. */
+  /** Instance of {@link XStream} used to unmarshall (deserialise) canned API response payloads used by tests. */
   private XStream xstream;
 
   /**
@@ -150,6 +151,30 @@ public class SpringApiClientImplIntegrationTest {
     this.apiClient = new SpringApiClientImpl(new URL("https://api.test.brighttalk.net/"), this.restTemplate);
     this.mockReportingApiService = MockRestServiceServer.createServer(this.restTemplate);
     this.initXStream();
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getMyChannels} in the case where HTTP response code 401 Unauthorized is returned.
+   * This can occur if the API credentials that the API client is configured to use are deemed invalid by the API
+   * server.
+   */
+  @Test
+  public void getMyChannelsWhenAuthenticationFails() {
+    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
+        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withUnauthorizedRequest());
+
+    try {
+      this.apiClient.getMyChannels(null);
+      fail("Expected exception to be thrown.");
+    } catch (ApiErrorResponseException e) {
+      assertThat(e.getStatusCode(), is(HttpStatus.UNAUTHORIZED.value()));
+    }
+
+    this.mockReportingApiService.verify();
   }
 
   /**
@@ -247,29 +272,6 @@ public class SpringApiClientImplIntegrationTest {
   }
 
   /**
-   * Tests {@link SpringApiClientImpl#getMyChannels} in the case where client error HTTP 401 Unauthorized is returned,
-   * which can occur if API user credentials were not supplied in the request, or they were but they're incorrect.
-   */
-  @Test
-  public void getMyChannelsWhenAuthenticationFailure() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUrl()
-        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
-
-    // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
-        withUnauthorizedRequest());
-
-    try {
-      this.apiClient.getMyChannels(null);
-      fail("Expected exception to be thrown.");
-    } catch (ApiErrorResponseException e) {
-      assertThat(e.getStatusCode(), is(HttpStatus.UNAUTHORIZED.value()));
-    }
-
-    this.mockReportingApiService.verify();
-  }
-
-  /**
    * Tests {@link SpringApiClientImpl#getMyChannels} in the case where the API service returns a response containing a
    * field value which cannot be converted to the expected type as defined in the API resource class. In this case,
    * return of a {@link ChannelResource} with a non-numeric identifier is tested.
@@ -336,6 +338,7 @@ public class SpringApiClientImplIntegrationTest {
 
     try {
       this.apiClient.getMyChannels(null);
+      fail("Expected exception to be thrown.");
     } catch (ApiErrorResponseException e) {
       assertThat(e.getStatusCode(), is(HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
@@ -365,6 +368,35 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(channelsResource, notNullValue());
     assertThat(channelsResource.getChannels(), hasSize(0));
     assertThat(channelsResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getMyChannels} in the case where HTTP response code 403 Forbidden is returned.
+   * This can occur if the requesting API user is not permitted to access the requested BrightTALK Channel.
+   */
+  @Test
+  public void getChannelSubscribersWhenAuthorisationFails() {
+    int channelId = 1;
+    String expectedTemplateRequestUrl =
+        this.apiClient.getApiServerBaseUrl() + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+
+    ApiError apiError = new ApiError("NotAuthorisedForChannel", "Not authorised for channel [" + channelId + "].");
+    String responseBody = apiErrorToXml(apiError);
+
+    // Configure mock API service to respond to API call with a canned collection of API resources read from file
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withStatus(HttpStatus.FORBIDDEN).body(responseBody).contentType(MediaType.APPLICATION_XML));
+
+    try {
+      this.apiClient.getChannelSubscribers(channelId, null, null, null, null);
+      fail("Expected exception to be thrown.");
+    } catch (ApiErrorResponseException e) {
+      assertThat(e.getStatusCode(), is(HttpStatus.FORBIDDEN.value()));
+      assertThat(e.getApiError(), is(apiError));
+    }
+
+    this.mockReportingApiService.verify();
   }
 
   /**
@@ -423,7 +455,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(subscribersResource.getChannelSubscribers(), hasSize(2));
 
     // Assert all fields in the first of the returned Resource
-    ChannelSubscribersResource expectedSubscribersResource = (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
+    ChannelSubscribersResource expectedSubscribersResource =
+        (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
     ChannelSubscriberResource expectedSubscriber = expectedSubscribersResource.getChannelSubscribers().get(0);
     // Relies on overridden ChannelResource.equals() to test for equality by value
     assertThat(subscribersResource.getChannelSubscribers().get(0), is(expectedSubscriber));
@@ -470,7 +503,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(subscribersResource.getChannelSubscribers(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    ChannelSubscribersResource expectedSubscribersResource = (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
+    ChannelSubscribersResource expectedSubscribersResource =
+        (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
     ChannelSubscriberResource expectedSubscriberResource = expectedSubscribersResource.getChannelSubscribers().get(0);
     // Relies on overridden ChannelResource.equals() to test for equality by value
     assertThat(subscribersResource.getChannelSubscribers().get(0), is(expectedSubscriberResource));
@@ -511,7 +545,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(subscribersResource.getChannelSubscribers(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    ChannelSubscribersResource expectedSubscribersResource = (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
+    ChannelSubscribersResource expectedSubscribersResource =
+        (ChannelSubscribersResource) this.xstream.fromXML(responseBody.getInputStream());
     ChannelSubscriberResource expectedSubscriberResource = expectedSubscribersResource.getChannelSubscribers().get(0);
     // Relies on overridden ChannelResource.equals() to test for equality by value
     assertThat(subscribersResource.getChannelSubscribers().get(0), is(expectedSubscriberResource));
@@ -531,8 +566,7 @@ public class SpringApiClientImplIntegrationTest {
 
     // Configure mock API service to respond to API call with a canned collection of Channel resources read from file
     ApiError apiError = new ApiError("ChannelNotFound", "Channel [" + channelId + "] not found");
-    String responseBody = "<?xml version='1.0' encoding='UTF-8'?><error><code>" + apiError.getCode()
-        + "</code><message>" + apiError.getMessage() + "</message></error>";
+    String responseBody = apiErrorToXml(apiError);
     MediaType mediaType = MediaType.APPLICATION_XML;
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withBadRequest().body(responseBody).contentType(mediaType));
@@ -540,13 +574,14 @@ public class SpringApiClientImplIntegrationTest {
     // Perform the test
     try {
       this.apiClient.getChannelSubscribers(channelId, null, null, null, null);
+      fail("Expected exception to be thrown.");
     } catch (ApiErrorResponseException e) {
       assertThat(e.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
       assertThat(e.getApiError(), is(apiError));
     }
 
     this.mockReportingApiService.verify();
-  }
+  }  
 
   /**
    * Test {@link SpringApiClientImpl#getSubscribersWebcastActivityForWebcast} in the case where there is no activity for
@@ -565,8 +600,9 @@ public class SpringApiClientImplIntegrationTest {
         withSuccess("<subscribersWebcastActivity/>", MediaType.APPLICATION_XML));
 
     // Perform the test
-    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
-        channelId, webcastId, null, null, null);
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource =
+        this.apiClient.getSubscribersWebcastActivityForWebcast(
+            channelId, webcastId, null, null, null);
 
     this.mockReportingApiService.verify();
     assertThat(subscribersWebcastActivityResource, notNullValue());
@@ -590,24 +626,28 @@ public class SpringApiClientImplIntegrationTest {
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
-    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
-        channelId, webcastId, null, null, null);
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource =
+        this.apiClient.getSubscribersWebcastActivityForWebcast(
+            channelId, webcastId, null, null, null);
 
     this.mockReportingApiService.verify();
     assertThat(subscribersWebcastActivityResource, notNullValue());
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities(), hasSize(2));
 
     // Assert all fields in the first of the returned Resource
-    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
-    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
-        0);
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource =
+        (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA =
+        expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+            0);
     // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
 
@@ -639,24 +679,28 @@ public class SpringApiClientImplIntegrationTest {
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenNextPageWithNonDefaultPageSizeReturnsLastPage-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
-    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
-        channelId, webcastId, null, null, pageCriteria);
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource =
+        this.apiClient.getSubscribersWebcastActivityForWebcast(
+            channelId, webcastId, null, null, pageCriteria);
 
     this.mockReportingApiService.verify();
     assertThat(subscribersWebcastActivityResource, notNullValue());
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
-    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
-        0);
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource =
+        (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA =
+        expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+            0);
     // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
 
@@ -684,23 +728,27 @@ public class SpringApiClientImplIntegrationTest {
     PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForWebcastWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
-    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForWebcast(
-        channelId, webcastId, sinceDate, expandChannelSurveyResponse, pageCriteria);
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource =
+        this.apiClient.getSubscribersWebcastActivityForWebcast(
+            channelId, webcastId, sinceDate, expandChannelSurveyResponse, pageCriteria);
 
     this.mockReportingApiService.verify();
     assertThat(subscribersWebcastActivityResource, notNullValue());
 
     // Assert all fields in the first of the returned Resource
-    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
-    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
-        0);
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource =
+        (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA =
+        expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+            0);
     // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
 
@@ -728,23 +776,27 @@ public class SpringApiClientImplIntegrationTest {
     PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getChannelSubscribersWebcastActivityForChannelWhenSinceNextPageAndExpandChannelSurveyResponse-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
     // Perform the test
-    SubscribersWebcastActivityResource subscribersWebcastActivityResource = this.apiClient.getSubscribersWebcastActivityForChannel(
-        channelId, sinceDate, expandChannelSurveyResponse, pageCriteria);
+    SubscribersWebcastActivityResource subscribersWebcastActivityResource =
+        this.apiClient.getSubscribersWebcastActivityForChannel(
+            channelId, sinceDate, expandChannelSurveyResponse, pageCriteria);
 
     this.mockReportingApiService.verify();
     assertThat(subscribersWebcastActivityResource, notNullValue());
 
     // Assert all fields in the first of the returned Resource
-    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource = (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
-    SubscriberWebcastActivityResource expectedSWA = expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
-        0);
+    SubscribersWebcastActivityResource expectedsubscribersWebcastActivityResource =
+        (SubscribersWebcastActivityResource) this.xstream.fromXML(responseBody.getInputStream());
+    SubscriberWebcastActivityResource expectedSWA =
+        expectedsubscribersWebcastActivityResource.getSubscriberWebcastActivities().get(
+            0);
     // Relies on overridden SubscriberWebcastActivityResource.equals() to test for equality by value
     assertThat(subscribersWebcastActivityResource.getSubscriberWebcastActivities().get(0), is(expectedSWA));
 
@@ -820,8 +872,10 @@ public class SpringApiClientImplIntegrationTest {
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType-response.xml", this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -901,9 +955,10 @@ public class SpringApiClientImplIntegrationTest {
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getSurveyResponsesWhenMultipleResponsesWithMultipleQuestionsAndAnswersAndNextPage-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getSurveyResponsesWhenMultipleResponsesWithMultipleQuestionsAndAnswersAndNextPage-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -915,7 +970,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(surveyResponsesResource.getSurveyResponses(), hasSize(2));
 
     // Assert all fields in the first of the returned Resource
-    SurveyResponsesResource expectedSurveyResponsesResource = (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
+    SurveyResponsesResource expectedSurveyResponsesResource =
+        (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
     SurveyResponseResource expectedSurveyResponseResource = expectedSurveyResponsesResource.getSurveyResponses().get(0);
     // Relies on overridden SurveyResponseResource.equals() to test for equality by value
     assertThat(surveyResponsesResource.getSurveyResponses().get(0), is(expectedSurveyResponseResource));
@@ -955,7 +1011,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(surveyResponsesResource.getSurveyResponses(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    SurveyResponsesResource expectedSurveyResponsesResource = (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
+    SurveyResponsesResource expectedSurveyResponsesResource =
+        (SurveyResponsesResource) this.xstream.fromXML(responseBody.getInputStream());
     SurveyResponseResource expectedSurveyResponseResource = expectedSurveyResponsesResource.getSurveyResponses().get(0);
     // Relies on overridden SurveyResponseResource.equals() to test for equality by value
     assertThat(surveyResponsesResource.getSurveyResponses().get(0), is(expectedSurveyResponseResource));
@@ -1149,9 +1206,11 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastRegistrationsResource.getWebcastRegistrations(), hasSize(2));
 
     // Assert all fields in the first of the returned Resource
-    WebcastRegistrationsResource expectedWebcastRegistrationsResource = (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
-    WebcastRegistrationResource expectedWebcastRegistrationResource = expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
-        0);
+    WebcastRegistrationsResource expectedWebcastRegistrationsResource =
+        (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastRegistrationResource expectedWebcastRegistrationResource =
+        expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
+            0);
     // Relies on overridden WebcastResource.equals() to test for equality by value
     assertThat(webcastRegistrationsResource.getWebcastRegistrations().get(0), is(expectedWebcastRegistrationResource));
 
@@ -1180,9 +1239,10 @@ public class SpringApiClientImplIntegrationTest {
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getWebcastRegistrationsForWebcastWhenViewedOnlySinceAndNextPageWithLastPage-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getWebcastRegistrationsForWebcastWhenViewedOnlySinceAndNextPageWithLastPage-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -1195,9 +1255,11 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastRegistrationsResource.getWebcastRegistrations(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    WebcastRegistrationsResource expectedWebcastRegistrationsResource = (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
-    WebcastRegistrationResource expectedWebcastRegistrationResource = expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
-        0);
+    WebcastRegistrationsResource expectedWebcastRegistrationsResource =
+        (WebcastRegistrationsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastRegistrationResource expectedWebcastRegistrationResource =
+        expectedWebcastRegistrationsResource.getWebcastRegistrations().get(
+            0);
     // Relies on overridden WebcastRegistrationResource.equals() to test for equality by value
     assertThat(webcastRegistrationsResource.getWebcastRegistrations().get(0), is(expectedWebcastRegistrationResource));
 
@@ -1279,7 +1341,8 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastViewingsResource.getWebcastViewings(), hasSize(2));
 
     // Assert all fields in the first of the returned Resource
-    WebcastViewingsResource expectedWebcastViewingsResource = (WebcastViewingsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastViewingsResource expectedWebcastViewingsResource =
+        (WebcastViewingsResource) this.xstream.fromXML(responseBody.getInputStream());
     WebcastViewingResource expectedWebcastViewingResource = expectedWebcastViewingsResource.getWebcastViewings().get(0);
     // Relies on overridden WebcastViewingResource.equals() to test for equality by value
     assertThat(webcastViewingsResource.getWebcastViewings().get(0), is(expectedWebcastViewingResource));
@@ -1309,9 +1372,10 @@ public class SpringApiClientImplIntegrationTest {
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
-    Resource responseBody = new ClassPathResource(
-        "SpringApiClientImplTest.getWebcastViewingsForWebcastViewingStatusRecordedAndSinceAndNextPageWithLastPage-response.xml",
-        this.getClass());
+    Resource responseBody =
+        new ClassPathResource(
+            "SpringApiClientImplTest.getWebcastViewingsForWebcastViewingStatusRecordedAndSinceAndNextPageWithLastPage-response.xml",
+            this.getClass());
     this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
         withSuccess(responseBody, MediaType.APPLICATION_XML));
 
@@ -1324,18 +1388,24 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastViewingsResource.getWebcastViewings(), hasSize(1));
 
     // Assert all fields in the first of the returned Resource
-    WebcastViewingsResource expectedWebcastViewingsResource = (WebcastViewingsResource) this.xstream.fromXML(responseBody.getInputStream());
+    WebcastViewingsResource expectedWebcastViewingsResource =
+        (WebcastViewingsResource) this.xstream.fromXML(responseBody.getInputStream());
     WebcastViewingResource expectedWebcastViewingResource = expectedWebcastViewingsResource.getWebcastViewings().get(0);
     // Relies on overridden WebcastRegistrationResource.equals() to test for equality by value
     assertThat(webcastViewingsResource.getWebcastViewings().get(0), is(expectedWebcastViewingResource));
 
     assertThat(webcastViewingsResource.getLinks(), hasSize(0));
   }
+  
+  private static String apiErrorToXml(ApiError apiError) {
+    return "<?xml version='1.0' encoding='UTF-8'?><error><code>" + apiError.getCode()
+        + "</code><message>" + apiError.getMessage() + "</message></error>";    
+  }  
 
   /**
    * Configures the {@link XStream} instance the test uses to unamrshall (deserialise) canned API response payloads.
    */
-  protected void initXStream() {
+  private void initXStream() {
     this.xstream = new XStream();
     this.xstream.alias("channels", ChannelsResource.class);
     this.xstream.registerConverter(new ChannelsResourceXStreamConverter());
