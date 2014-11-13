@@ -14,6 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.springframework.version>4.0.6.RELEASE</org.springframework.version>
+    <java.version>7</java.version>
   </properties>
 
   <dependencies>
@@ -57,6 +58,7 @@
       <version>4.3.3</version>
       <scope>compile</scope>      
     </dependency>    
+    
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -88,23 +90,30 @@
       <artifactId>logback-classic</artifactId>
       <version>1.1.2</version>
       <scope>test</scope>      
-    </dependency>            
+    </dependency>
+    <!-- Add support for bridging logs written to Java Commons Logging by 3rd party classes (e.g. Apache HTTP client) to SLF4J -->
+    <dependency> 
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.7.7</version>
+      <scope>test</scope>      
+    </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>3.2</version>
       <scope>test</scope>      
-    </dependency>
+    </dependency>    
   </dependencies>  
   <build>
     <plugins>
-      <!-- Enable use of Java 7 language features, overriding default of 1.5 -->
+      <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>7</source>
-          <target>7</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>
