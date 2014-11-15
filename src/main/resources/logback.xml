@@ -49,4 +49,9 @@
   <logger name="org.apache.http.wire" level="INFO" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>    
+  
+  <!-- Logger for wiremock (only used for functional testing) -->
+  <logger name="com.github.tomakehurst.wiremock.*" level="INFO" additivity="false">
+    <appender-ref ref="STDOUT" />  
+  </logger>  
 </configuration>
