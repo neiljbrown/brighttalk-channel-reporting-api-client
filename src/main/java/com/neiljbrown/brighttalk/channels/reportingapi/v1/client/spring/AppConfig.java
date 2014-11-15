@@ -42,6 +42,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.http.client.PreemptiveBasicAuthHttpRequestInterceptor;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.jaxb.CustomValidationEventHandler;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
 
@@ -179,6 +180,7 @@ public class AppConfig {
     UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(this.apiUserKey, this.apiUserSecret);
     credentialsProvider.setCredentials(authScope, credentials);
     builder.setDefaultCredentialsProvider(credentialsProvider);
+    builder.addInterceptorFirst(new PreemptiveBasicAuthHttpRequestInterceptor());    
     // HttpClient should by default set the Accept-Encoding request header to indicate the client supports HTTP
     // response compression using gzip
     return builder.build();
