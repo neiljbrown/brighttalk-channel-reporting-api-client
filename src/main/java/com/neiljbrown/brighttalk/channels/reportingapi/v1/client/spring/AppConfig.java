@@ -62,13 +62,13 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @PropertySource("classpath:btalk-cor-api-v1-client-${environment:dev}.properties")
 public class AppConfig {
 
-  @Value("${apiservice.host}")
+  @Value("${apiService.host}")
   private String apiServiceHost;
-  @Value("${apiservice.port}")
+  @Value("${apiService.port}")
   private int apiServicePort;
-  @Value("${apiuser.key}")
+  @Value("${apiUser.key}")
   private String apiUserKey;
-  @Value("${apiuser.secret}")
+  @Value("${apiUser.secret}")
   private String apiUserSecret;
 
   /**
