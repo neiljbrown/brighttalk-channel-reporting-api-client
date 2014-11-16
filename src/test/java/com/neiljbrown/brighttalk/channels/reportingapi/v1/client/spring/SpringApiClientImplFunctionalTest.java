@@ -23,20 +23,21 @@ import static org.junit.Assert.*;
 
 import java.net.URL;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Log4jNotifier;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 
 /**
@@ -56,10 +57,6 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @ContextConfiguration(classes = { AppConfig.class })
 public class SpringApiClientImplFunctionalTest {
 
-  private static final String API_SERVICE_PROTOCOL = "http"; // Use HTTP instead of HTTPS to avoid need for certs
-  private static final String API_SERVICE_HOST = "localhost";
-  private static final int API_SERVICE_PORT = 8081;
-
   /** Instance of class under test */
   private SpringApiClientImpl apiClient;
 
@@ -68,19 +65,38 @@ public class SpringApiClientImplFunctionalTest {
   @Qualifier("apiClientRestTemplate")
   private RestTemplate restTemplate;
 
+  @Value("${apiService.protocol}")
+  private String apiServiceProtocol;
+  @Value("${apiService.host}")
+  private String apiServiceHost;
+  @Value("${apiService.port}")
+  private int apiServicePort;
+
+  private WireMockServer wireMockServer;
+
   /** Automate the startup and shutdown of the mock HTTP server before and after the execution of each test */
-  @Rule
-  public WireMockRule wireMockRule =
-      new WireMockRule(wireMockConfig().bindAddress(API_SERVICE_HOST).port(API_SERVICE_PORT).notifier(
-          new Log4jNotifier()));
+  // Can't use WireMock's JUnit Rule as it runs before properties are injected by SpringJUnit4ClassRunner
+  // @Rule
+  // public WireMockRule wireMockRule =
+  // new WireMockRule(wireMockConfig().bindAddress(this.apiServiceHost).port(this.apiServicePort).notifier(
+  // new Log4jNotifier()));
 
   /**
    * @throws Exception If an unexpected exception occurs.
    */
   @Before
   public void setUp() throws Exception {
-    this.apiClient = new SpringApiClientImpl(new URL(API_SERVICE_PROTOCOL, API_SERVICE_HOST, API_SERVICE_PORT, ""),
+    if (this.wireMockServer == null) {
+      initWireMock();
+    }
+    this.wireMockServer.start();
+    this.apiClient = new SpringApiClientImpl(new URL(apiServiceProtocol, this.apiServiceHost, this.apiServicePort, ""),
         this.restTemplate);
+  }
+
+  @After
+  public void teardown() {
+    this.wireMockServer.stop();
   }
 
   /**
@@ -134,4 +150,16 @@ public class SpringApiClientImplFunctionalTest {
 
     WireMock.verify(getRequestedFor(urlEqualTo(expectedRequestUrl)).withHeader("Accept-Encoding", matching(".*gzip.*")));
   }
+
+  /**
+   * Creates a WireMockServer that listens on the configured host and port and initialises the corresponding property.
+   */
+  private void initWireMock() {
+    this.wireMockServer =
+        new WireMockServer(wireMockConfig().bindAddress(this.apiServiceHost).port(this.apiServicePort).notifier(
+            new Log4jNotifier()));
+    // If you change the default host and port, you also need to tell the WireMock facade about it
+    WireMock.configureFor(this.apiServiceHost, this.apiServicePort);
+  }
+
 }
