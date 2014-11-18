@@ -62,8 +62,8 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @PropertySource("classpath:btalk-cor-api-v1-client-${environment:dev}.properties")
 public class AppConfig {
 
-  @Value("${apiService.host}")
-  private String apiServiceHost;
+  @Value("${apiService.hostName}")
+  private String apiServiceHostName;
   @Value("${apiService.port}")
   private int apiServicePort;
   @Value("${apiUser.key}")
@@ -176,7 +176,7 @@ public class AppConfig {
     HttpClientBuilder builder = HttpClients.custom();
     // Configure the basic authentication credentials to use for all requests
     CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    AuthScope authScope = new AuthScope(this.apiServiceHost, this.apiServicePort);
+    AuthScope authScope = new AuthScope(this.apiServiceHostName, this.apiServicePort);
     UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(this.apiUserKey, this.apiUserSecret);
     credentialsProvider.setCredentials(authScope, credentials);
     builder.setDefaultCredentialsProvider(credentialsProvider);

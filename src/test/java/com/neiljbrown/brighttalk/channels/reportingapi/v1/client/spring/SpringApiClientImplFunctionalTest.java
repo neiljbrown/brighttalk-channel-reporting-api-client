@@ -21,8 +21,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.*;
 
-import java.net.URL;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,8 +65,8 @@ public class SpringApiClientImplFunctionalTest {
 
   @Value("${apiService.protocol}")
   private String apiServiceProtocol;
-  @Value("${apiService.host}")
-  private String apiServiceHost;
+  @Value("${apiService.hostName}")
+  private String apiServiceHostName;
   @Value("${apiService.port}")
   private int apiServicePort;
 
@@ -78,7 +76,7 @@ public class SpringApiClientImplFunctionalTest {
   // Can't use WireMock's JUnit Rule as it runs before properties are injected by SpringJUnit4ClassRunner
   // @Rule
   // public WireMockRule wireMockRule =
-  // new WireMockRule(wireMockConfig().bindAddress(this.apiServiceHost).port(this.apiServicePort).notifier(
+  // new WireMockRule(wireMockConfig().bindAddress(this.apiServiceHostName).port(this.apiServicePort).notifier(
   // new Log4jNotifier()));
 
   /**
@@ -90,7 +88,7 @@ public class SpringApiClientImplFunctionalTest {
       initWireMock();
     }
     this.wireMockServer.start();
-    this.apiClient = new SpringApiClientImpl(new URL(apiServiceProtocol, this.apiServiceHost, this.apiServicePort, ""),
+    this.apiClient = new SpringApiClientImpl(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort,
         this.restTemplate);
   }
 
@@ -156,10 +154,10 @@ public class SpringApiClientImplFunctionalTest {
    */
   private void initWireMock() {
     this.wireMockServer =
-        new WireMockServer(wireMockConfig().bindAddress(this.apiServiceHost).port(this.apiServicePort).notifier(
+        new WireMockServer(wireMockConfig().bindAddress(this.apiServiceHostName).port(this.apiServicePort).notifier(
             new Log4jNotifier()));
     // If you change the default host and port, you also need to tell the WireMock facade about it
-    WireMock.configureFor(this.apiServiceHost, this.apiServicePort);
+    WireMock.configureFor(this.apiServiceHostName, this.apiServicePort);
   }
 
 }
