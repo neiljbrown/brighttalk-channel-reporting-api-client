@@ -43,11 +43,6 @@ dependencies {
   testCompile("org.slf4j:log4j-over-slf4j:1.7.7")  
   testCompile("org.easymock:easymock:3.2")
   testCompile("com.github.tomakehurst:wiremock:1.51")  
-
-  // Runtime dependencies  
-  // Spring framework modules for Spring implementation of API client based on RestTemplate
-  // spring-context module for creating a Spring application context and dependency injection.
-  runtime("org.springframework:spring-context:${orgSpringframeworkVersion}")       
 }
 
 task wrapper(type: Wrapper) {

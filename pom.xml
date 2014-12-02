@@ -31,13 +31,6 @@
       <scope>compile</scope>      
     </dependency>    
     <!-- Spring framework modules for Spring implementation of API client based on RestTemplate -->         
-    <!-- spring-context module for creating a Spring application context and dependency injection. -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${org.springframework.version}</version>
-      <scope>compile</scope>
-    </dependency>
     <!-- spring-web module for RestTemplate et al. -->
     <dependency>
       <groupId>org.springframework</groupId>
