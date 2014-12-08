@@ -4,9 +4,22 @@
 This project contains the source code for an API client for [BrightTALK's](https://www.brighttalk.com/) 
 [Channel Owner Reporting API](https://www.brighttalk.com/todo).
 
-The API client is implemented in Java (7), and packaged as a JAR file. An implementation of the client API is provided 
-that is built using the Spring framework (4.x). The source code is made available under the popular 
+The API client is implemented in Java, and packaged as a JAR file. An implementation of the client API is provided 
+that is built using the Spring framework. The source code is made available under the popular 
 [Apache License 2.0](http://en.wikipedia.org/wiki/Apache_License). 
+
+## Runtime Dependencies
+The API client requires a minimum of a Java 7 runtime (JRE) and the minimum versions of the following third-party libraries on the classpath: 
+
+* com.google.guava:guava:16.0.1
+* org.slf4j:slf4j-api:1.7.7
+* org.springframework:spring-context:4.0.6.RELEASE
+* org.springframework:spring-oxm:4.0.6.RELEASE 
+* org.springframework:spring-web:4.0.6.RELEASE
+* org.apache.httpcomponents:httpclient:4.3.3
+ 
+To enable API client logging you'll additionally need to add the SLF4J "binding" JAR for your chosen logging framework. 
+For more details see the [SLF4J user manual](http://www.slf4j.org/manual.html).   
 
 ## Code / API Documentation
 Javadoc is available [online](https://to-do). If you wish to familiarise yoursefl with the code, good places to start 
