@@ -59,7 +59,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
  * @author Neil Brown
  */
 @Configuration
-@PropertySource("classpath:btalk-cor-api-v1-client-${environment:dev}.properties")
+@PropertySource("classpath:brighttalk-channel-reporting-api-v1-client-${environment:dev}.properties")
 public class AppConfig {
 
   @Value("${apiService.hostName}")
