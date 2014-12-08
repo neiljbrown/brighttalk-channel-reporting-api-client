@@ -9,7 +9,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 jar {
-  baseName = 'brighttalk-channel-owner-reporting-api-v1-client'
+  baseName = 'brighttalk-channel-reporting-api-v1-client'
   version =  '0.0.1-SNAPSHOT'
 }
 

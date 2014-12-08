@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.neiljbrown.brighttalk.channels</groupId>
-  <artifactId>brighttalk-channel-owner-reporting-api-v1-client</artifactId>
+  <artifactId>brighttalk-channel-reporting-api-v1-client</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
