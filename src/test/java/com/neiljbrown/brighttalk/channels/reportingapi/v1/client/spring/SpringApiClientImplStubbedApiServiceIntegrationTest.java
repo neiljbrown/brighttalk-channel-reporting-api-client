@@ -39,21 +39,21 @@ import com.github.tomakehurst.wiremock.common.Log4jNotifier;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ChannelsResource;
 
 /**
- * Functional tests for {@link SpringApiClientImpl}.
+ * Additional integration tests for {@link SpringApiClientImpl}, which stub-out the API service.
  * <p>
- * These tests supplement the integration tests for {@link SpringApiClientImpl} which contain the bulk of the test
- * coverage. However, as noted in the integration test case, those tests don't exercise the underlying HTTP client as
- * they're implemented using the Spring MVC Test framework, which substitutes the
+ * The {@link SpringApiClientImplIntegrationTest} contains the bulk of the integration tests for
+ * {@link SpringApiClientImpl}. However, as noted in that test case, those tests don't exercise the underlying HTTP 
+ * client as they're implemented using the Spring MVC Test framework, which substitutes the
  * {@link org.springframework.http.client.ClientHttpRequestFactory} to support stubbing and verification. These
- * functional tests are instead implemented with a stubbed HTTP server (using WireMock) which additionally test that the
- * class' configured HTTP client behaves as expected.
+ * additional integration tests are instead implemented with a stubbed API service (using WireMock) which additionally
+ * test that the class' configured HTTP client behaves as expected.
  * 
  * @author Neil Brown
  * @see SpringApiClientImplIntegrationTest
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { AppConfig.class })
-public class SpringApiClientImplFunctionalTest {
+public class SpringApiClientImplStubbedApiServiceIntegrationTest {
 
   /** Instance of class under test */
   private SpringApiClientImpl apiClient;
