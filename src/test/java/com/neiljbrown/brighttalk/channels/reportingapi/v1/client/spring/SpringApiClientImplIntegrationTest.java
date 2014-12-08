@@ -43,6 +43,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -117,9 +118,12 @@ import com.thoughtworks.xstream.XStream;
  * (end-to-end integration or functional) tests.
  * 
  * @author Neil Brown
+ * @see SpringApiClientImplStubbedApiServiceIntegrationTest
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { AppConfig.class })
+// Avoid reuse of injected RestTemplate in later tests as it's configured to use a MockClientHttpRequestFactory
+@DirtiesContext
 public class SpringApiClientImplIntegrationTest {
 
   /** Instance of class under test */
