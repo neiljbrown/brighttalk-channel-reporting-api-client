@@ -7,6 +7,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'maven'
 
 jar {
   baseName = 'brighttalk-channel-reporting-api-v1-client'
@@ -50,3 +51,12 @@ task wrapper(type: Wrapper) {
 }
 
 eclipse.classpath.downloadJavadoc = true // defaults to 'false'
+
+// Configure Maven plugin's install task with meta-data needed to publish artifact to local Maven repos.
+install {
+  repositories.mavenInstaller {
+    pom.groupId = 'com.neiljbrown.brighttalk.channels'
+    pom.artifactId = "${jar.baseName}"      
+    pom.version = "${jar.version}"
+  }
+}
