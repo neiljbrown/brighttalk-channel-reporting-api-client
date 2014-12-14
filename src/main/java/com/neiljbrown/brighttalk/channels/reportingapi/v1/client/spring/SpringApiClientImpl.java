@@ -74,69 +74,71 @@ public class SpringApiClientImpl implements ApiClient {
   private static final Pattern VALID_HOST_NAME_PATTERN =
       Pattern.compile("[a-zA-Z0-9\\.\\-]{4,253}", Pattern.CASE_INSENSITIVE);
 
-  private final String apiServerProtocol;
-  private final String apiServerHostName;
-  private final int apiServerPort;
-  private final URI apiServerBaseUri;
+  private final String apiServiceProtocol;
+  private final String apiServiceHostName;
+  private final int apiServicePort;
+  private final URI apiServiceBaseUri;
   private final RestTemplate restTemplate;
 
   /**
-   * Creates an instance of the API client that communicates with an identified API server, using the default protocol
+   * Creates an instance of the API client that communicates with an identified API service, using the default protocol
    * and port number.
    * 
-   * @param apiServerHostName The host name of the BrightTALK API server. A fully qualified domain name.
+   * @param apiServiceHostName The host name of the BrightTALK API service. A fully qualified domain name.
    * @param restTemplate The Spring {@link RestTemplate} this API client should use to make HTTP requests and process
    * the resulting HTTP response. The object must be fully configured with a connection factory supporting the required
    * API authentication and marshalling of all supported API resources to/from HTTP request and response bodies.
    * @see #SpringApiClientImpl(String, String, Integer, RestTemplate)
    */
-  public SpringApiClientImpl(String apiServerHostName, RestTemplate restTemplate) {
-    this(null, apiServerHostName, null, restTemplate);
+  public SpringApiClientImpl(String apiServiceHostName, RestTemplate restTemplate) {
+    this(null, apiServiceHostName, null, restTemplate);
   }
 
   /**
-   * Creates an instance of the API client that communicates with a specified API server host.
+   * Creates an instance of the API client that communicates with a specified API service host.
    * 
-   * @param apiServerProtocol The protocol used to communicate with the BrightTALK API server. One of "http" or "https".
-   * Optional. If null defaults to "https".
-   * @param apiServerHostName The host name of the BrightTALK API server. A fully qualified domain name.
-   * @param apiServerPort The port of the BrightTALK API server. Optional. If null defaults to 80 or 443 depending on 
-   * {@code apiServerProtocol}. 
+   * @param apiServiceProtocol The protocol used to communicate with the BrightTALK API service. One of "http" or
+   * "https". Optional. If null defaults to "https".
+   * @param apiServiceHostName The host name of the BrightTALK API service. A fully qualified domain name.
+   * @param apiServicePort The port of the BrightTALK API service. Optional. If null defaults to 80 or 443 depending on
+   * {@code apiServiceProtocol}.
    * @param restTemplate The Spring {@link RestTemplate} this API client should use to make HTTP requests and process
    * the resulting HTTP response. The object must be fully configured with a connection factory supporting the required
    * API authentication and marshalling of all supported API resources to/from HTTP request and response bodies.
    */
-  public SpringApiClientImpl(String apiServerProtocol, String apiServerHostName, Integer apiServerPort,
+  public SpringApiClientImpl(String apiServiceProtocol, String apiServiceHostName, Integer apiServicePort,
       RestTemplate restTemplate) {
-    if (apiServerProtocol == null) {
-      apiServerProtocol = PROTOCOL_HTTPS;
+    if (apiServiceProtocol == null) {
+      apiServiceProtocol = PROTOCOL_HTTPS;
     }
     Preconditions.checkArgument(
-        PROTOCOL_HTTP.equalsIgnoreCase(apiServerProtocol) || PROTOCOL_HTTPS.equalsIgnoreCase(apiServerProtocol),
-        "API server protocol must be one or '%s' or '%s', not [%s]", PROTOCOL_HTTP, PROTOCOL_HTTPS, apiServerProtocol);
-    this.apiServerProtocol = apiServerProtocol.toLowerCase();
+        PROTOCOL_HTTP.equalsIgnoreCase(apiServiceProtocol) || PROTOCOL_HTTPS.equalsIgnoreCase(apiServiceProtocol),
+        "API service protocol must be one or '%s' or '%s', not [%s]", PROTOCOL_HTTP, PROTOCOL_HTTPS, apiServiceProtocol);
+    this.apiServiceProtocol = apiServiceProtocol.toLowerCase();
 
-    Preconditions.checkNotNull(apiServerHostName, "API server host name must not be null.");
-    Preconditions.checkArgument(VALID_HOST_NAME_PATTERN.matcher(apiServerHostName).matches(),
-        "Invalid API server host name [%s].", apiServerHostName);
-    this.apiServerHostName = apiServerHostName;
+    Preconditions.checkNotNull(apiServiceHostName, "API service host name must not be null.");
+    Preconditions.checkArgument(VALID_HOST_NAME_PATTERN.matcher(apiServiceHostName).matches(),
+        "Invalid API service host name [%s].", apiServiceHostName);
+    this.apiServiceHostName = apiServiceHostName;
 
-    if (apiServerPort == null) {
-      apiServerPort = PROTOCOL_HTTP.equalsIgnoreCase(apiServerProtocol) ? HTTP_DEFAULT_PORT : HTTPS_DEFAULT_PORT;
+    if (apiServicePort == null) {
+      apiServicePort = PROTOCOL_HTTP.equalsIgnoreCase(apiServiceProtocol) ? HTTP_DEFAULT_PORT : HTTPS_DEFAULT_PORT;
     }
-    Preconditions.checkArgument(apiServerPort > 0, "API server port must be a positive number, not [%s]", apiServerPort);
-    this.apiServerPort = apiServerPort;
+    Preconditions.checkArgument(apiServicePort > 0, "API service port must be a positive number, not [%s]",
+        apiServicePort);
+    this.apiServicePort = apiServicePort;
 
     this.restTemplate = Preconditions.checkNotNull(restTemplate, "RestTemplate must not be null.");
 
-    this.apiServerBaseUri = initApiServerBaseUri(this.apiServerProtocol, this.apiServerHostName, this.apiServerPort);
+    this.apiServiceBaseUri =
+        initApiServiceBaseUri(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort);
   }
 
   /** {@inheritDoc} */
   @Override
   public ChannelsResource getMyChannels(PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class);
   }
@@ -145,7 +147,7 @@ public class SpringApiClientImpl implements ApiClient {
   @Override
   public ChannelsResource getUserChannels(int userId, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelsResource.USER_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class, userId);
   }
@@ -156,7 +158,7 @@ public class SpringApiClientImpl implements ApiClient {
       Date unsubscribedSince, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetChannelSubscribersRequestParamsBuilder(subscribed,
         subscribedSince, unsubscribedSince, pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelSubscribersResource.RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelSubscribersResource.class, channelId);
   }
@@ -167,7 +169,7 @@ public class SpringApiClientImpl implements ApiClient {
       Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
         expandChannelSurveyResponse, pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId);
   }
@@ -178,7 +180,7 @@ public class SpringApiClientImpl implements ApiClient {
       Date since, Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
         expandChannelSurveyResponse, pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId,
         webcastId);
@@ -187,7 +189,7 @@ public class SpringApiClientImpl implements ApiClient {
   /** {@inheritDoc} */
   @Override
   public SurveysResource getSurveysForChannel(int channelId) throws ApiClientException {
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE, null);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SurveysResource.class, channelId);
   }
@@ -195,7 +197,7 @@ public class SpringApiClientImpl implements ApiClient {
   /** {@inheritDoc} */
   @Override
   public SurveyResource getSurvey(int surveyId) throws ApiClientException {
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri, SurveyResource.RELATIVE_URI_TEMPLATE,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri, SurveyResource.RELATIVE_URI_TEMPLATE,
         null);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResource.class, surveyId);
   }
@@ -205,7 +207,7 @@ public class SpringApiClientImpl implements ApiClient {
   public SurveyResponsesResource getSurveyResponses(int surveyId, Date since, PageCriteria pageCriteria)
       throws ApiClientException {
     Map<String, List<String>> requestParams = new GetSurveyResponsesRequestParamsBuilder(since, pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SurveyResponsesResource.RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResponsesResource.class, surveyId);
   }
@@ -215,15 +217,16 @@ public class SpringApiClientImpl implements ApiClient {
   public WebcastsResource getWebcastsForChannel(int channelId, Date since, PageCriteria pageCriteria)
       throws ApiClientException {
     Map<String, List<String>> requestParams = new GetWebcastsRequestParamsBuilder(since, pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri, WebcastsResource.RELATIVE_URI_TEMPLATE,
-        requestParams);
+    String absResourceUrlTemplate =
+        buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastsResource.RELATIVE_URI_TEMPLATE,
+            requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastsResource.class, channelId);
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastResource getWebcast(int channelId, int webcastId) throws ApiClientException {
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri, WebcastResource.RELATIVE_URI_TEMPLATE,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastResource.RELATIVE_URI_TEMPLATE,
         null);
     return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastResource.class, channelId, webcastId);
   }
@@ -234,7 +237,7 @@ public class SpringApiClientImpl implements ApiClient {
       Boolean viewed, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetWebcastRegistrationsRequestParamsBuilder(since, viewed,
         pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastRegistrationsResource.class, channelId,
         webcastId);
@@ -246,7 +249,7 @@ public class SpringApiClientImpl implements ApiClient {
       PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetWebcastViewingsRequestParamsBuilder(since, webcastStatus,
         pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastViewingsResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId);
   }
@@ -257,46 +260,46 @@ public class SpringApiClientImpl implements ApiClient {
       WebcastStatus webcastStatus, PageCriteria pageCriteria) throws ApiClientException {
     Map<String, List<String>> requestParams = new GetWebcastViewingsRequestParamsBuilder(since, webcastStatus,
         pageCriteria).asMap();
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServerBaseUri,
+    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
     return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId, webcastId);
   }
 
   /**
-   * @return the apiServerProtocol
+   * @return the apiServiceProtocol
    */
-  public final String getApiServerProtocol() {
-    return this.apiServerProtocol;
+  public final String getApiServiceProtocol() {
+    return this.apiServiceProtocol;
   }
 
   /**
-   * @return the apiServerHostName
+   * @return the apiServiceHostName
    */
-  public final String getApiServerHostName() {
-    return this.apiServerHostName;
+  public final String getApiServiceHostName() {
+    return this.apiServiceHostName;
   }
 
   /**
-   * @return the apiServerPort
+   * @return the apiServicePort
    */
-  public final int getApiServerPort() {
-    return this.apiServerPort;
+  public final int getApiServicePort() {
+    return this.apiServicePort;
   }
 
   /**
-   * @return The base (protocol, host name and optional port) {@link URI} of the API server which this client is
+   * @return The base (protocol, host name and optional port) {@link URI} of the API service which this client is
    * currently configured to use. This is an environment specific value.
    */
-  public final URI getApiServerBaseUri() {
+  public final URI getApiServiceBaseUri() {
     try {
       // Return a new URI to preserve immutability
-      return new URI(this.apiServerBaseUri.toString());
+      return new URI(this.apiServiceBaseUri.toString());
     } catch (URISyntaxException e) {
       throw new ApiClientException(e);
     }
   }
 
-  private static URI initApiServerBaseUri(String protocol, String hostName, int port) {
+  private static URI initApiServiceBaseUri(String protocol, String hostName, int port) {
     try {
       return new URI(protocol + "://" + hostName + ":" + port);
     } catch (URISyntaxException e) {

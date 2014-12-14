@@ -159,11 +159,11 @@ public class SpringApiClientImplIntegrationTest {
   /**
    * Tests {@link SpringApiClientImpl#getMyChannels} in the case where HTTP response code 401 Unauthorized is returned.
    * This can occur if the API credentials that the API client is configured to use are deemed invalid by the API
-   * server.
+   * service.
    */
   @Test
   public void getMyChannelsWhenAuthenticationFails() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -185,7 +185,7 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsWhenZeroChannels() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call
@@ -209,7 +209,7 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsWhenMultipleChannelsWithNextPage() throws Exception {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -247,7 +247,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getMyChannelsWhenNextPageWithNonDefaultPageSizeReturnsLastPage() throws Exception {
     int pageSize = 50;
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
 
@@ -281,7 +281,7 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsInvalidResponseTypeMismatchChannelId() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -306,7 +306,7 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsInvalidResponseTypeMismatchChannelCreatedDate() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -332,7 +332,7 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Test
   public void getMyChannelsWhenInternalServerError() {
-    String expectedRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE;
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -356,7 +356,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getUserChanelsWhenZeroChannels() {
     int userId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.USER_CHANNELS_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(userId).toString();
 
@@ -381,7 +381,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getChannelSubscribersWhenAuthorisationFails() {
     int channelId = 1;
     String expectedTemplateRequestUrl =
-        this.apiClient.getApiServerBaseUri() + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE;
+        this.apiClient.getApiServiceBaseUri() + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
     ApiError apiError = new ApiError("NotAuthorisedForChannel", "Not authorised for channel [" + channelId + "].");
@@ -410,7 +410,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getChannelSubscribersWhenZeroSubscribers() {
     int channelId = 1;
     Boolean subscribed = false;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?subscribed=" + subscribed;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -438,7 +438,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getChannelSubscribersWhenMultipleCurrentAndPastSusbcribersWithNextPage() throws Exception {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -485,7 +485,7 @@ public class SpringApiClientImplIntegrationTest {
     String subscribedSinceAsString = "2014-06-14T19:26:10Z";
     Date subscribedSinceDate = new ApiDateTimeFormatter().parse(subscribedSinceAsString);
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?subscribed=" + subscribed + "&subscribedSince="
         + subscribedSinceAsString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
@@ -527,7 +527,7 @@ public class SpringApiClientImplIntegrationTest {
     String unsubscribedSinceAsString = "2014-06-16T22:06:40Z";
     Date unsubscribedSinceDate = new ApiDateTimeFormatter().parse(unsubscribedSinceAsString);
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?unsubscribedSince=" + unsubscribedSinceAsString
         + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
@@ -563,7 +563,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getChannelSubscribersWhenChannelNotFound() {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -594,7 +594,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getSubscribersWebcastActivityForWebcastWhenZeroActivity() {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
@@ -624,7 +624,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getSubscribersWebcastActivityForWebcastWhenMultipleActivitiesWithNextPage() throws Exception {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
@@ -676,7 +676,7 @@ public class SpringApiClientImplIntegrationTest {
     int channelId = 1;
     int webcastId = 2;
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
@@ -724,7 +724,7 @@ public class SpringApiClientImplIntegrationTest {
     String sinceString = "2014-06-28T21:24:59Z";
     boolean expandChannelSurveyResponse = true;
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
@@ -772,7 +772,7 @@ public class SpringApiClientImplIntegrationTest {
     String sinceString = "2014-06-28T21:24:59Z";
     boolean expandChannelSurveyResponse = true;
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
@@ -812,7 +812,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveysForChannelWhenNoSurveyFound() {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -837,7 +837,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveysForChannelWhenSingleSurveyMultipleQuestionsOfEveryType() throws Exception {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -871,7 +871,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveyWhenInactiveSurveyMultipleQuestionsOfEveryType() throws Exception {
     int surveyId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + SurveyResource.RELATIVE_URI_TEMPLATE;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + SurveyResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -902,7 +902,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveyWhenInvalidResponseTypeMismatchActive() {
     int surveyId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + SurveyResource.RELATIVE_URI_TEMPLATE;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + SurveyResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -927,7 +927,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveyResponsesWhenZeroResponses() {
     int surveyId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveyResponsesResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
@@ -953,7 +953,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getSurveyResponsesWhenMultipleResponsesWithMultipleQuestionsAndAnswersAndNextPage() throws Exception {
     int surveyId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveyResponsesResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
 
@@ -993,7 +993,7 @@ public class SpringApiClientImplIntegrationTest {
     int surveyId = 1;
     String sinceString = "2014-06-28T21:24:59Z";
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveyResponsesResource.RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
     PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
@@ -1030,7 +1030,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getWebcastsForChannelWhenZeroResponses() {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
     // Configure mock API service to respond to API call
@@ -1056,7 +1056,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getWebcastsForChannelWhenMultipleWebastsAndNextPage() throws Exception {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
@@ -1093,7 +1093,7 @@ public class SpringApiClientImplIntegrationTest {
     String sinceString = "2014-06-28T21:24:59Z";
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE
         + "?since=" + sinceString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
     PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
@@ -1131,7 +1131,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getWebcastExistsFullyPopulated() throws Exception {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri() + WebcastResource.RELATIVE_URI_TEMPLATE;
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastResource.RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
     // Configure mock API service to respond to API call with a canned API resource read from file
@@ -1160,7 +1160,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getWebcastRegistrationsForWebcastWhenZeroFound() {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
@@ -1189,7 +1189,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getWebcastRegistrationsForWebcastWhenMultipleRegistrationsAndNextPage() throws Exception {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
@@ -1235,7 +1235,7 @@ public class SpringApiClientImplIntegrationTest {
     String sinceString = "2013-07-10T12:23:22Z";
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&viewed="
         + viewed + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
@@ -1276,7 +1276,7 @@ public class SpringApiClientImplIntegrationTest {
   @Test
   public void getWebcastViewingsForChannelWhenZeroFound() {
     int channelId = 1;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastViewingsResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
 
@@ -1324,7 +1324,7 @@ public class SpringApiClientImplIntegrationTest {
   public void getWebcastViewingsForWebcastWhenMultipleRegistrationsAndNextPage() throws Exception {
     int channelId = 1;
     int webcastId = 2;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
 
@@ -1368,7 +1368,7 @@ public class SpringApiClientImplIntegrationTest {
     Date sinceDate = new ApiDateTimeFormatter().parse(sinceString);
     WebcastStatus webcastStatus = WebcastStatus.RECORDED;
     int pageSize = 200;
-    String expectedTemplateRequestUrl = this.apiClient.getApiServerBaseUri()
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&webcastStatus="
         + webcastStatus.toString() + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();

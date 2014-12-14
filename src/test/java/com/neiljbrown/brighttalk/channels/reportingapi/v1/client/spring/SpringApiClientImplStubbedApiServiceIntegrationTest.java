@@ -42,7 +42,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
  * Additional integration tests for {@link SpringApiClientImpl}, which stub-out the API service.
  * <p>
  * The {@link SpringApiClientImplIntegrationTest} contains the bulk of the integration tests for
- * {@link SpringApiClientImpl}. However, as noted in that test case, those tests don't exercise the underlying HTTP 
+ * {@link SpringApiClientImpl}. However, as noted in that test case, those tests don't exercise the underlying HTTP
  * client as they're implemented using the Spring MVC Test framework, which substitutes the
  * {@link org.springframework.http.client.ClientHttpRequestFactory} to support stubbing and verification. These
  * additional integration tests are instead implemented with a stubbed API service (using WireMock) which additionally
@@ -116,7 +116,7 @@ public class SpringApiClientImplStubbedApiServiceIntegrationTest {
 
   /**
    * Tests that the API client performs preemptive basic authentication - includes authentication credentials in all its
-   * requests, for the configured target host and post, rather than waiting to be challenged by the API server, thereby
+   * requests, for the configured target host and post, rather than waiting to be challenged by the API service, thereby
    * avoiding the overhead of an extra request/response cycle.
    */
   @Test
@@ -133,7 +133,7 @@ public class SpringApiClientImplStubbedApiServiceIntegrationTest {
   }
 
   /**
-   * Tests that the API client takes advantage of the API server's support for HTTP (response) compression by include
+   * Tests that the API client takes advantage of the API service's support for HTTP (response) compression by include
    * HTTP header 'Accept-Encoding: gzip' in its requests.
    */
   @Test

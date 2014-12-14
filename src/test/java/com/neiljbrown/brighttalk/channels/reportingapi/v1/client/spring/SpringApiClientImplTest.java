@@ -51,7 +51,7 @@ public class SpringApiClientImplTest {
   @Test
   public final void testConstructOptionlProtocolNotSupplied() {
     SpringApiClientImpl apiClient = new SpringApiClientImpl(null, "api.test.brighttalk.net", 443, new RestTemplate());
-    assertThat(apiClient.getApiServerProtocol(), is("https"));    
+    assertThat(apiClient.getApiServiceProtocol(), is("https"));    
   } 
   
   /**
@@ -61,7 +61,7 @@ public class SpringApiClientImplTest {
   @Test
   public final void testConstructOptionlPortNotSupplied() {
     SpringApiClientImpl apiClient = new SpringApiClientImpl("http", "api.test.brighttalk.net", null, new RestTemplate());
-    assertThat(apiClient.getApiServerPort(), is(80));    
+    assertThat(apiClient.getApiServicePort(), is(80));    
   }   
 
   /**
@@ -71,8 +71,8 @@ public class SpringApiClientImplTest {
   @Test
   public final void testConstructValidHostNameOnly() {
     SpringApiClientImpl apiClient = new SpringApiClientImpl("api.test.brighttalk.net", new RestTemplate());
-    assertThat(apiClient.getApiServerProtocol(), is("https"));
-    assertThat(apiClient.getApiServerPort(), is(443));
+    assertThat(apiClient.getApiServiceProtocol(), is("https"));
+    assertThat(apiClient.getApiServicePort(), is(443));
   }
     
   /**
