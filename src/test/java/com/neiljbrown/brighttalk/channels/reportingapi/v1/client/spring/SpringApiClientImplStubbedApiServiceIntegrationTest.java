@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,14 +54,12 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @ContextConfiguration(classes = { AppConfig.class })
 public class SpringApiClientImplStubbedApiServiceIntegrationTest {
 
-  /** Instance of class under test */
+  /** Instance of class under test, configured with production instance of {@link RestTemplate} */
+  @Autowired
   private SpringApiClientImpl apiClient;
 
-  /** Instance of {@link RestTemplate}, as configured for production. */
-  @Autowired
-  @Qualifier("apiClientRestTemplate")
-  private RestTemplate restTemplate;
-
+  // Enviroment specific API service props used by injected SpringApiClientImpl instance for reuse when initialising
+  // the mock server
   @Value("${apiService.protocol}")
   private String apiServiceProtocol;
   @Value("${apiService.hostName}")
@@ -88,8 +85,10 @@ public class SpringApiClientImplStubbedApiServiceIntegrationTest {
       initWireMock();
     }
     this.wireMockServer.start();
+    /*
     this.apiClient = new SpringApiClientImpl(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort,
         this.restTemplate);
+    */
   }
 
   @After

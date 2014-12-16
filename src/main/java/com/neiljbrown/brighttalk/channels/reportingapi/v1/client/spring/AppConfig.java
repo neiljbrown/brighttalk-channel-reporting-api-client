@@ -26,7 +26,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +41,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiClient;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.http.client.PreemptiveBasicAuthHttpRequestInterceptor;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.jaxb.CustomValidationEventHandler;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
@@ -62,6 +62,9 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @PropertySource("classpath:brighttalk-channel-reporting-api-v1-client-${environment:dev}.properties")
 public class AppConfig {
 
+  // Environment specific API service properties injected from external config (props file) 
+  @Value("${apiService.protocol}")
+  private String apiServiceProtocol;
   @Value("${apiService.hostName}")
   private String apiServiceHostName;
   @Value("${apiService.port}")
@@ -94,14 +97,28 @@ public class AppConfig {
   }
 
   /**
+   * Creates a fully configured instance of an implementation of the {@link ApiClient BrightTALK Reporting API client}.  
+   * 
+   * @param apiClientRestTemplate The instance of {@link RestTemplate} to use.
+   * 
+   * @return The {@link ApiClient}.
+   */
+  @Bean
+  public ApiClient apiClient(RestTemplate apiClientRestTemplate) {
+    return new SpringApiClientImpl(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort,
+        apiClientRestTemplate);
+  }
+
+  /**
+   * Creates and configures the instance of {@link RestTemplate} to be used by the API client.
+   * 
    * @param httpMessageConverters The list of {@link HttpMessageConverter} that the created {@link RestTemplate} should
    * used to read/write HTTP request and response body. Ultimately dictates the set of media-types supported by the
    * client.
    * 
-   * @return The instance of {@link RestTemplate} used by the API client.
+   * @return The instance of {@link RestTemplate} to be used by the API client.
    */
   @Bean
-  @Autowired
   // Note - @Value is needed on the injected parameter to get Spring to use a specific bean of type List rather than its
   // default behaviour of building a List from all the beans of the matching member type
   public RestTemplate apiClientRestTemplate(
@@ -129,7 +146,6 @@ public class AppConfig {
    */
   // Note - The bean is given a specific name in this case to support the injection of a bean of type List using @Value
   @Bean(name = "httpMessageConverters")
-  @Autowired
   public List<HttpMessageConverter<?>> httpMessageConverters(Marshaller marshaller) {
     return Arrays.asList(new HttpMessageConverter<?>[] { new MarshallingHttpMessageConverter(marshaller) });
   }
@@ -180,7 +196,7 @@ public class AppConfig {
     UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(this.apiUserKey, this.apiUserSecret);
     credentialsProvider.setCredentials(authScope, credentials);
     builder.setDefaultCredentialsProvider(credentialsProvider);
-    builder.addInterceptorFirst(new PreemptiveBasicAuthHttpRequestInterceptor());    
+    builder.addInterceptorFirst(new PreemptiveBasicAuthHttpRequestInterceptor());
     // HttpClient should by default set the Accept-Encoding request header to indicate the client supports HTTP
     // response compression using gzip
     return builder.build();

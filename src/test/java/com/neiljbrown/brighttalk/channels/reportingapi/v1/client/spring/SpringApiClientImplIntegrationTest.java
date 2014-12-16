@@ -127,6 +127,7 @@ import com.thoughtworks.xstream.XStream;
 public class SpringApiClientImplIntegrationTest {
 
   /** Instance of class under test */
+  @Autowired
   private SpringApiClientImpl apiClient;
 
   /**
@@ -151,7 +152,6 @@ public class SpringApiClientImplIntegrationTest {
    */
   @Before
   public void setUp() throws Exception {
-    this.apiClient = new SpringApiClientImpl("https", "api.test.brighttalk.net", 443, this.restTemplate);
     this.mockReportingApiService = MockRestServiceServer.createServer(this.restTemplate);
     this.initXStream();
   }
