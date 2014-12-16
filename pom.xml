@@ -113,13 +113,23 @@
   </dependencies>  
   <build>
     <plugins>
-      <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->        
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Exclude environment specific props files from JAR as they're only templates and get packaged in the zip -->
+            <exclude>brighttalk-channel-reporting-api-v1-client-*.properties</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>

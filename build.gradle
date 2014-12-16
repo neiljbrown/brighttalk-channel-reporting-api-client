@@ -12,6 +12,8 @@ apply plugin: 'maven'
 jar {
   baseName = 'brighttalk-channel-reporting-api-v1-client'
   version =  '0.0.1-SNAPSHOT'
+  // Exclude environment specific props files from JAR as they're only templates and get packaged in the zip
+  exclude('brighttalk-channel-reporting-api-v1-client-*.properties')  
 }
 
 repositories {
