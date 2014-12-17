@@ -62,7 +62,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Channe
 @PropertySource("classpath:brighttalk-channel-reporting-api-v1-client-${environment:dev}.properties")
 public class AppConfig {
 
-  // Environment specific API service properties injected from external config (props file) 
+  // Environment specific API service properties injected from external config (props file)
   @Value("${apiService.protocol}")
   private String apiServiceProtocol;
   @Value("${apiService.hostName}")
@@ -97,34 +97,25 @@ public class AppConfig {
   }
 
   /**
-   * Creates a fully configured instance of an implementation of the {@link ApiClient BrightTALK Reporting API client}.  
-   * 
-   * @param apiClientRestTemplate The instance of {@link RestTemplate} to use.
+   * Creates a fully configured instance of an implementation of the {@link ApiClient BrightTALK Reporting API client}.
    * 
    * @return The {@link ApiClient}.
    */
   @Bean
-  public ApiClient apiClient(RestTemplate apiClientRestTemplate) {
+  public ApiClient apiClient() {
     return new SpringApiClientImpl(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort,
-        apiClientRestTemplate);
+        this.apiClientRestTemplate());
   }
 
   /**
    * Creates and configures the instance of {@link RestTemplate} to be used by the API client.
    * 
-   * @param httpMessageConverters The list of {@link HttpMessageConverter} that the created {@link RestTemplate} should
-   * used to read/write HTTP request and response body. Ultimately dictates the set of media-types supported by the
-   * client.
-   * 
    * @return The instance of {@link RestTemplate} to be used by the API client.
    */
   @Bean
-  // Note - @Value is needed on the injected parameter to get Spring to use a specific bean of type List rather than its
-  // default behaviour of building a List from all the beans of the matching member type
-  public RestTemplate apiClientRestTemplate(
-      @Value("#{httpMessageConverters}") List<HttpMessageConverter<?>> httpMessageConverters) {
+  public RestTemplate apiClientRestTemplate() {
     // Use custom list of HttpMessageConverter rather than the default to allow the marshalling config to be customised
-    RestTemplate restTemplate = new RestTemplate(httpMessageConverters);
+    RestTemplate restTemplate = new RestTemplate(this.httpMessageConverters());
     restTemplate.setRequestFactory(this.clientHttpRequestFactory());
     restTemplate.setErrorHandler(this.responseErrorHandler());
     return restTemplate;
@@ -138,16 +129,11 @@ public class AppConfig {
    * RestTemplate to support the supply of a custom configured marshaller. The list of created HTTP message converter
    * will include a {@link MarshallingHttpMessageConverter} that uses the supplied {@link Marshaller}.
    * 
-   * @param marshaller The pre-configured {@link org.springframework.oxm.Marshaller} that the created
-   * {@link MarshallingHttpMessageConverter} should use. Must also support unmarshalling, by implementing
-   * {@link org.springframework.oxm.Unmarshaller}.
-   * 
    * @return The created list of {@link HttpMessageConverter}.
    */
-  // Note - The bean is given a specific name in this case to support the injection of a bean of type List using @Value
-  @Bean(name = "httpMessageConverters")
-  public List<HttpMessageConverter<?>> httpMessageConverters(Marshaller marshaller) {
-    return Arrays.asList(new HttpMessageConverter<?>[] { new MarshallingHttpMessageConverter(marshaller) });
+  @Bean
+  public List<HttpMessageConverter<?>> httpMessageConverters() {
+    return Arrays.asList(new HttpMessageConverter<?>[] { new MarshallingHttpMessageConverter(this.marshaller()) });
   }
 
   /**
