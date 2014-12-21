@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -65,6 +67,8 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
  * @author Neil Brown
  */
 public class SpringApiClientImpl implements ApiClient {
+
+  private static final Logger logger = LoggerFactory.getLogger(SpringApiClientImpl.class);
 
   private static final String PROTOCOL_HTTP = "http";
   private static final String PROTOCOL_HTTPS = "https";
@@ -137,132 +141,182 @@ public class SpringApiClientImpl implements ApiClient {
   /** {@inheritDoc} */
   @Override
   public ChannelsResource getMyChannels(PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting My Channels with page criteria [{}].", pageCriteria);
     Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class);
+    ChannelsResource channels = this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class);
+    logger.debug("Got My Channels [{}].", channels);
+    return channels;
   }
 
   /** {@inheritDoc} */
   @Override
   public ChannelsResource getUserChannels(int userId, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting User Channels for user [{}] with page criteria [{}].", userId, pageCriteria);
     Map<String, List<String>> requestParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelsResource.USER_CHANNELS_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class, userId);
+    ChannelsResource channels = this.restTemplate.getForObject(absResourceUrlTemplate, ChannelsResource.class, userId);
+    logger.debug("Got User Channels [{}].", channels);
+    return channels;
   }
 
   /** {@inheritDoc} */
   @Override
   public ChannelSubscribersResource getChannelSubscribers(int channelId, Boolean subscribed, Date subscribedSince,
       Date unsubscribedSince, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Channel Subscribers for channel [{}] with page criteria [{}].", channelId, pageCriteria);
     Map<String, List<String>> requestParams = new GetChannelSubscribersRequestParamsBuilder(subscribed,
         subscribedSince, unsubscribedSince, pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         ChannelSubscribersResource.RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, ChannelSubscribersResource.class, channelId);
+    ChannelSubscribersResource subscribers =
+        this.restTemplate.getForObject(absResourceUrlTemplate, ChannelSubscribersResource.class, channelId);
+    logger.debug("Got Channel Subscribers [{}].", subscribers);
+    return subscribers;
   }
 
   /** {@inheritDoc} */
   @Override
   public SubscribersWebcastActivityResource getSubscribersWebcastActivityForChannel(int channelId, Date since,
       Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Subscribers Webcast Activity for channel [{}] with page criteria [{}].", channelId,
+        pageCriteria);
     Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
         expandChannelSurveyResponse, pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId);
+    SubscribersWebcastActivityResource subscribersWebcastActivity =
+        this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId);
+    logger.debug("Got Subscribers Webcast Activity [{}].", subscribersWebcastActivity);
+    return subscribersWebcastActivity;
   }
 
   /** {@inheritDoc} */
   @Override
   public SubscribersWebcastActivityResource getSubscribersWebcastActivityForWebcast(int channelId, int webcastId,
       Date since, Boolean expandChannelSurveyResponse, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Subscribers Webcast Activity for channel [{}], webcast [{}] with page criteria [{}].",
+        channelId, webcastId, pageCriteria);
     Map<String, List<String>> requestParams = new GetSubscribersWebcastActivityRequestParamsBuilder(since,
         expandChannelSurveyResponse, pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId,
-        webcastId);
+    SubscribersWebcastActivityResource subscribersWebcastActivity =
+        this.restTemplate.getForObject(absResourceUrlTemplate, SubscribersWebcastActivityResource.class, channelId,
+            webcastId);
+    logger.debug("Got Subscribers Webcast Activity [{}].", subscribersWebcastActivity);
+    return subscribersWebcastActivity;
   }
 
   /** {@inheritDoc} */
   @Override
   public SurveysResource getSurveysForChannel(int channelId) throws ApiClientException {
+    logger.debug("Requesting Surveys for channel [{}].", channelId);
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SurveysResource.FOR_CHANNELS_RELATIVE_URI_TEMPLATE, null);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveysResource.class, channelId);
+    SurveysResource surveys = this.restTemplate.getForObject(absResourceUrlTemplate, SurveysResource.class, channelId);
+    logger.debug("Got Surveys [{}].", surveys);
+    return surveys;
   }
 
   /** {@inheritDoc} */
   @Override
   public SurveyResource getSurvey(int surveyId) throws ApiClientException {
+    logger.debug("Requesting Survey [{}].", surveyId);
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri, SurveyResource.RELATIVE_URI_TEMPLATE,
         null);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResource.class, surveyId);
+    SurveyResource survey = this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResource.class, surveyId);
+    logger.debug("Got Survey [{}].", survey);
+    return survey;
   }
 
   /** {@inheritDoc} */
   @Override
   public SurveyResponsesResource getSurveyResponses(int surveyId, Date since, PageCriteria pageCriteria)
       throws ApiClientException {
+    logger.debug("Requesting Survey Responses for survey [{}] with page criteria [{}].", surveyId, pageCriteria);
     Map<String, List<String>> requestParams = new GetSurveyResponsesRequestParamsBuilder(since, pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         SurveyResponsesResource.RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResponsesResource.class, surveyId);
+    SurveyResponsesResource surveyResponses =
+        this.restTemplate.getForObject(absResourceUrlTemplate, SurveyResponsesResource.class, surveyId);
+    logger.debug("Got Survey Responses [{}].", surveyResponses);
+    return surveyResponses;
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastsResource getWebcastsForChannel(int channelId, Date since, PageCriteria pageCriteria)
       throws ApiClientException {
+    logger.debug("Requesting Webcasts for channel [{}] with page criteria [{}].", channelId, pageCriteria);
     Map<String, List<String>> requestParams = new GetWebcastsRequestParamsBuilder(since, pageCriteria).asMap();
     String absResourceUrlTemplate =
-        buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastsResource.RELATIVE_URI_TEMPLATE,
-            requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastsResource.class, channelId);
+        buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastsResource.RELATIVE_URI_TEMPLATE, requestParams);
+    WebcastsResource webcasts =
+        this.restTemplate.getForObject(absResourceUrlTemplate, WebcastsResource.class, channelId);
+    logger.debug("Got Webcasts [{}].", webcasts);
+    return webcasts;
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastResource getWebcast(int channelId, int webcastId) throws ApiClientException {
-    String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastResource.RELATIVE_URI_TEMPLATE,
-        null);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastResource.class, channelId, webcastId);
+    logger.debug("Requesting Webcast [{}] for channel [{}].", webcastId, channelId);
+    String absResourceUrlTemplate =
+        buildAbsoluteHttpUrl(this.apiServiceBaseUri, WebcastResource.RELATIVE_URI_TEMPLATE, null);
+    WebcastResource webcast =
+        this.restTemplate.getForObject(absResourceUrlTemplate, WebcastResource.class, channelId, webcastId);
+    logger.debug("Got Webcast [{}].", webcast);
+    return webcast;
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastRegistrationsResource getWebcastRegistrationsForWebcast(int channelId, int webcastId, Date since,
       Boolean viewed, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Webcast Registrations for channel [{}], webcast [{}] with page criteria [{}].", channelId,
+        webcastId, pageCriteria);
     Map<String, List<String>> requestParams = new GetWebcastRegistrationsRequestParamsBuilder(since, viewed,
         pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastRegistrationsResource.class, channelId,
-        webcastId);
+    WebcastRegistrationsResource webcastRegistrations =
+        this.restTemplate.getForObject(absResourceUrlTemplate, WebcastRegistrationsResource.class, channelId, webcastId);
+    logger.debug("Got Webcast Registrations [{}].", webcastRegistrations);
+    return webcastRegistrations;
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastViewingsResource getWebcastViewingsForChannel(int channelId, Date since, WebcastStatus webcastStatus,
       PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Webcast Viewings for channel [{}] with page criteria [{}].", channelId, pageCriteria);
     Map<String, List<String>> requestParams = new GetWebcastViewingsRequestParamsBuilder(since, webcastStatus,
         pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastViewingsResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId);
+    WebcastViewingsResource webcastViewings =
+        this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId);
+    logger.debug("Got Webcast Viewings [{}].", webcastViewings);
+    return webcastViewings;
   }
 
   /** {@inheritDoc} */
   @Override
   public WebcastViewingsResource getWebcastViewingsForWebcast(int channelId, int webcastId, Date since,
       WebcastStatus webcastStatus, PageCriteria pageCriteria) throws ApiClientException {
+    logger.debug("Requesting Webcast Viewings for channel [{}], webcast [{}] with page criteria [{}].", channelId,
+        webcastId, pageCriteria);
     Map<String, List<String>> requestParams = new GetWebcastViewingsRequestParamsBuilder(since, webcastStatus,
         pageCriteria).asMap();
     String absResourceUrlTemplate = buildAbsoluteHttpUrl(this.apiServiceBaseUri,
         WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE, requestParams);
-    return this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId, webcastId);
+    WebcastViewingsResource webcastViewings =
+        this.restTemplate.getForObject(absResourceUrlTemplate, WebcastViewingsResource.class, channelId, webcastId);
+    logger.debug("Got Webcast Viewings [{}].", webcastViewings);
+    return webcastViewings;
   }
 
   /**

@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
 /**
@@ -43,7 +44,6 @@ public final class NextPageUrl {
       + PagingRequestParamsBuilder.ParamName.CURSOR.getName() + "=([^&]+).*");
 
   private URL url;
-
   private String cursor;
 
   /**
@@ -79,6 +79,16 @@ public final class NextPageUrl {
   public String getCursor() {
     return this.cursor;
   }
+  
+  @Override
+  public String toString() {
+    /* @formatter:off */
+    return Objects.toStringHelper(this).omitNullValues()
+      .add("url", this.url)
+      .add("cursor", this.cursor)
+      .toString();
+    /* @formatter:on */
+  }  
 
   /**
    * Parses the string representation of a next page URL as an HTTP URL.
@@ -114,5 +124,5 @@ public final class NextPageUrl {
       return cursor;
     }
     throw new IllegalArgumentException("Next page URL must contain a cursor request param [" + nextPageUrl + "].");
-  }
+  }    
 }

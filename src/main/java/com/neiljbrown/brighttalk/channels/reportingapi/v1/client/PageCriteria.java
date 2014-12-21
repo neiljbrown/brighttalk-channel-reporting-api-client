@@ -15,6 +15,8 @@
  */
 package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
 
+import com.google.common.base.Objects;
+
 /**
  * Encapsulates the paging criteria for all paged reporting APIs, e.g. those which return collections of resources.
  * 
@@ -66,4 +68,14 @@ public class PageCriteria {
   public final NextPageUrl getNextPageUrl() {
     return this.nextPageUrl;
   }
+  
+  @Override
+  public String toString() {
+    /* @formatter:off */
+    return Objects.toStringHelper(this).omitNullValues()
+      .add("pageSize", this.pageSize)
+      .add("nextPageUrl", this.nextPageUrl)
+      .toString();
+    /* @formatter:on */
+  }  
 }
