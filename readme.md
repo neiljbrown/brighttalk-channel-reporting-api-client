@@ -19,7 +19,10 @@ The API client requires a minimum of a Java 7 runtime (JRE) and the minimum vers
 * org.apache.httpcomponents:httpclient:4.3.3
  
 To enable API client logging you'll additionally need to add the SLF4J "binding" JAR for your chosen logging framework. 
-For more details see the [SLF4J user manual](http://www.slf4j.org/manual.html).   
+For more details see the [SLF4J user manual](http://www.slf4j.org/manual.html). For example, to use the native SLF4J 
+binding logback, add the following to your classpath:
+
+* ch.qos.logback:logback-classic:1.1.2  
 
 ## Code / API Documentation
 Javadoc is available [online](https://to-do). If you wish to familiarise yoursefl with the code, good places to start 
