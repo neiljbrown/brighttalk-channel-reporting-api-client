@@ -58,6 +58,27 @@ public class Link {
     this.title = title;
   }
 
+  /**
+   * @return the href
+   */
+  public final String getHref() {
+    return this.href;
+  }
+
+  /**
+   * @return the rel
+   */
+  public final String getRel() {
+    return this.rel;
+  }
+
+  /**
+   * @return the title. Can be null.
+   */
+  public final String getTitle() {
+    return this.title;
+  }
+
   @Override
   public String toString() {
     /* @formatter:off */    
@@ -113,5 +134,5 @@ public class Link {
       return false;
     }
     return true;
-  }   
+  }
 }
