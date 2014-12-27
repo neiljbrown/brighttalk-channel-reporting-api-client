@@ -9,12 +9,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-jar {
-  baseName = 'brighttalk-channel-reporting-api-v1-client'
-  version =  '0.0.1-SNAPSHOT'
-  // Exclude environment specific props files from JAR as they're only templates and get packaged in the zip
-  exclude('brighttalk-channel-reporting-api-v1-client-*.properties')  
-}
+eclipse.classpath.downloadJavadoc = true // defaults to 'false'
 
 repositories {
   mavenCentral()
@@ -48,11 +43,32 @@ dependencies {
   testCompile("com.github.tomakehurst:wiremock:1.51")  
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.12'
+jar {
+  baseName = 'brighttalk-channel-reporting-api-v1-client'
+  version =  '0.0.1-SNAPSHOT'
+  // Exclude environment specific props files from JAR as they're only templates and get packaged in the zip
+  exclude('brighttalk-channel-reporting-api-v1-client-*.properties')  
 }
 
-eclipse.classpath.downloadJavadoc = true // defaults to 'false'
+task sourcesJar(type: Jar) {
+  baseName = "${jar.baseName}"
+  classifier 'sources'
+  from sourceSets.main.allSource
+  version =  "${jar.version}"      
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  baseName = "${jar.baseName}"
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+  version =  "${jar.version}"  
+}
+
+artifacts {
+  // Extend published artifacts to include source and javadoc JARs as well as default JAR 
+  archives sourcesJar
+  archives javadocJar
+}
 
 // Configure Maven plugin's install task with meta-data needed to publish artifact to local Maven repos.
 install {
@@ -60,5 +76,9 @@ install {
     pom.groupId = 'com.neiljbrown.brighttalk.channels'
     pom.artifactId = "${jar.baseName}"      
     pom.version = "${jar.version}"
-  }
+  }  
+}
+ 
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.12'
 }

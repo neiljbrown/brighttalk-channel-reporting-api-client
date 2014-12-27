@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>brighttalk-channel-owner-reporting-api-v1-client</name>
-  <description>Client for version 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>  
+  <description>Client for version 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>
   <url>https://bitbucket.org/neilbrown</url>
 
   <properties>
@@ -22,36 +22,36 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>16.0.1</version>
-      <scope>compile</scope>      
-    </dependency> 
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.7</version>
-      <scope>compile</scope>      
-    </dependency>    
-    <!-- Spring framework modules for Spring implementation of API client based on RestTemplate -->         
+      <scope>compile</scope>
+    </dependency>
+    <!-- Spring framework modules for Spring implementation of API client based on RestTemplate -->
     <!-- spring-web module for RestTemplate et al. -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
       <version>${org.springframework.version}</version>
-      <scope>compile</scope>      
+      <scope>compile</scope>
     </dependency>
     <!-- spring-oxm module for Marshaller classes etc. -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-oxm</artifactId>
       <version>${org.springframework.version}</version>
-      <scope>compile</scope>      
-    </dependency>    
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.3.3</version>
-      <scope>compile</scope>      
-    </dependency>    
-    
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -68,55 +68,56 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${org.springframework.version}</version>
-      <scope>test</scope>      
-    </dependency>                        
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
       <version>1.4.7</version>
-      <scope>test</scope>      
+      <scope>test</scope>
     </dependency>
-    <!-- Use an SLF4J-binding of logback-classic for testing purposes, but avoid imposing it as a dependency upon 
-         users of the app by declaring the scope of the dependency of 'test' only -->       
-    <dependency> 
+    <!-- Use an SLF4J-binding of logback-classic for testing purposes, but avoid imposing it as a dependency upon users of 
+      the app by declaring the scope of the dependency of 'test' only -->
+    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.1.2</version>
-      <scope>test</scope>      
+      <scope>test</scope>
     </dependency>
-    <!-- Add support for bridging logs written to Java Commons Logging by 3rd party classes (e.g. Apache HTTP client) to SLF4J -->
-    <dependency> 
+    <!-- Add support for bridging logs written to Java Commons Logging by 3rd party classes (e.g. Apache HTTP client) to 
+      SLF4J -->
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.7.7</version>
-      <scope>test</scope>      
+      <scope>test</scope>
     </dependency>
     <!-- Add support for bridging logs written to Log4j by 3rd party classes (e.g. Wiremock) to SLF4J -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <version>1.7.7</version>
-      <scope>test</scope>      
-    </dependency>                       
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>3.2</version>
-      <scope>test</scope>      
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
       <version>1.51</version>
-      <scope>test</scope>      
-    </dependency>            
-  </dependencies>  
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->        
+        <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
@@ -132,6 +133,30 @@
           </excludes>
         </configuration>
       </plugin>
+      <!-- Generate sources JAR in addition to default classes JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Generate javadoc JAR in addition to default classes JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-  </build>      
+  </build>
 </project>
