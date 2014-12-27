@@ -75,10 +75,9 @@ public class AppConfig {
   private String apiUserKey;
   @Value("${apiUser.secret}")
   private String apiUserSecret;
-  
-  @Value("#{'${defaultRequestHeaders}'.split(';;')}") 
+
+  @Value("#{'${defaultRequestHeaders:}'.split(';;')}") 
   private List<String> defaultRequestHeaders;
- 
 
   /**
    * The classes of exception which should be treated as fatal if they occur as the root cause of a marshalling or
@@ -182,7 +181,7 @@ public class AppConfig {
   @Bean
   public HttpClient httpClient() {
     HttpClientBuilder builder = HttpClients.custom();
-    
+
     // Configure the basic authentication credentials to use for all requests
     CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
     AuthScope authScope = new AuthScope(this.apiServiceHostName, this.apiServicePort);
@@ -190,23 +189,23 @@ public class AppConfig {
     credentialsProvider.setCredentials(authScope, credentials);
     builder.setDefaultCredentialsProvider(credentialsProvider);
     builder.addInterceptorFirst(new PreemptiveBasicAuthHttpRequestInterceptor());
-    
+
     // Configure default request headers
     List<Header> headers = new ArrayList<>(5);
-    headers.add(new BasicHeader("Api-Client", SpringApiClientImpl.class.getCanonicalName())); 
-    if(this.defaultRequestHeaders != null) {
-      for(String header : this.defaultRequestHeaders) {
+    headers.add(new BasicHeader("Api-Client", SpringApiClientImpl.class.getCanonicalName()));
+    if (this.defaultRequestHeaders != null) {
+      for (String header : this.defaultRequestHeaders) {
         String[] headerNameAndValue = header.split("==", 2);
         if (headerNameAndValue.length == 2) {
-          headers.add(new BasicHeader(headerNameAndValue[0],headerNameAndValue[1]));
-        }        
+          headers.add(new BasicHeader(headerNameAndValue[0], headerNameAndValue[1]));
+        }
       }
     }
     builder.setDefaultHeaders(headers);
-    
+
     // HttpClient should by default set the Accept-Encoding request header to indicate the client supports HTTP
     // response compression using gzip
-    
+
     return builder.build();
   }
 
