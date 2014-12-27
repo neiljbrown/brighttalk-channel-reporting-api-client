@@ -85,10 +85,6 @@ public class SpringApiClientImplStubbedApiServiceIntegrationTest {
       initWireMock();
     }
     this.wireMockServer.start();
-    /*
-    this.apiClient = new SpringApiClientImpl(this.apiServiceProtocol, this.apiServiceHostName, this.apiServicePort,
-        this.restTemplate);
-    */
   }
 
   @After

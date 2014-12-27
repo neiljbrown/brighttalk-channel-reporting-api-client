@@ -16,6 +16,9 @@
 package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Link;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.support.LinkRelationType;
 
 /**
  * Encapsulates the paging criteria for all paged reporting APIs, e.g. those which return collections of resources.
@@ -24,58 +27,70 @@ import com.google.common.base.Objects;
  */
 public class PageCriteria {
   private final Integer pageSize;
-  private final NextPageUrl nextPageUrl;
+  private final Link nextPageLink;
 
   /**
    * Creates page criteria for a request for the first page of resources.
    * 
-   * @param pageSize The max no. of entries to return in the requested page of resources. Optional. If null then 
-   * API requests built from this criteria won't include a page size, instead relying on the API's default page size.
+   * @param pageSize The max no. of entries to return in the requested page of resources. Optional. If null then API
+   * requests built from this criteria won't include a page size, instead relying on the API's default page size.
    */
   public PageCriteria(Integer pageSize) {
     this(pageSize, null);
   }
-  
+
   /**
    * Creates page criteria for the next page of resources, using the default page size.
    * 
-   * @param nextPageUrl The URL of the next page of a collection of resources, as returned by the API in the 'href'
-   * attribute of a link relation of type 'next' in the previous page of resources. Optional, only supplied for API
-   * calls for secondary pages of resources.
+   * @param nextPageLink A {@link Link} to the next page of a collection of resources, as returned in the previous page
+   * of the resource collection. Must have a relation type ('rel') of {@link LinkRelationType#next} and a href
+   * containing a valid URL for a next page of resources. Optional, only supplied for API calls for secondary pages of
+   * resources.
    */
-  public PageCriteria(NextPageUrl nextPageUrl) {
-    this(null, nextPageUrl);
+  public PageCriteria(Link nextPageLink) {
+    this(null, nextPageLink);
   }
 
   /**
    * Creates page criteria for the next page of resources, with a specified page size.
    * 
-   * @param pageSize The max no. of entries to return in the requested page of resources. Optional. If null then 
-   * API requests built from this criteria won't include a page size, instead relying on the API's default page size.
-   * @param nextPageUrl The URL of the next page of a collection of resources, as returned by the API in the 'href'
-   * attribute of a link relation of type 'next' in the previous page of resources. Optional, only supplied for API
-   * calls for secondary pages of resources.
+   * @param pageSize The max no. of entries to return in the requested page of resources. Optional. If null then API
+   * requests built from this criteria won't include a page size, instead relying on the API's default page size.
+   * @param nextPageLink A {@link Link} to the next page of a collection of resources, as returned in the previous page
+   * of the resource collection. Must have a relation type ('rel') of {@link LinkRelationType#next} and a href
+   * containing a valid URL for a next page of resources. Optional, only supplied for API calls for secondary pages of
+   * resources.
    */
-  public PageCriteria(Integer pageSize, NextPageUrl nextPageUrl) {
+  public PageCriteria(Integer pageSize, Link nextPageLink) {
+    Preconditions.checkArgument(pageSize == null || pageSize > 0, "pageSize must be null or greater than zero.");
+    if (nextPageLink != null) {
+      try {
+        NextPageUrl.parse(nextPageLink.getHref());
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("nextPageLink href is not a valid next page URL [" + nextPageLink + "].", e);
+      }
+    }
     this.pageSize = pageSize;
-    this.nextPageUrl = nextPageUrl;
+    this.nextPageLink = nextPageLink;
   }
 
   public final Integer getPageSize() {
     return this.pageSize;
   }
 
-  public final NextPageUrl getNextPageUrl() {
-    return this.nextPageUrl;
+  public final Link getNextPageLink() {
+    // Construct a copy of link field to preserve immutability
+    return this.nextPageLink != null ?
+        new Link(this.nextPageLink.getHref(), this.nextPageLink.getRel(), this.nextPageLink.getTitle()) : null;
   }
-  
+
   @Override
   public String toString() {
     /* @formatter:off */
     return Objects.toStringHelper(this).omitNullValues()
       .add("pageSize", this.pageSize)
-      .add("nextPageUrl", this.nextPageUrl)
+      .add("nextPageLink", this.nextPageLink)
       .toString();
     /* @formatter:on */
-  }  
+  }
 }

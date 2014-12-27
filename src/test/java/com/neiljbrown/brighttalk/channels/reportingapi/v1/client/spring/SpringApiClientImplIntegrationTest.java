@@ -52,7 +52,6 @@ import org.springframework.web.util.UriTemplate;
 
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiErrorResponseException;
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.NextPageUrl;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.marshall.ChannelResourceXStreamConverter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.marshall.ChannelSubscriberResourceXStreamConverter;
@@ -96,6 +95,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingsResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.support.LinkRelationType;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -202,6 +202,31 @@ public class SpringApiClientImplIntegrationTest {
   }
 
   /**
+   * Tests an API call, such as {@link SpringApiClientImpl#getMyChannels}, when page criteria is supplied without a 
+   * next page link, i.e. it is criteria for the first page of resources which is only used to specificy a non-default
+   * page size.
+   */
+  @Test
+  public void getMyChannelsWhenPageCriteriaSuppliedForFirstPage() {
+    int pageSize = 100;
+    PageCriteria firstPageCriteria = new PageCriteria(pageSize);    
+    String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
+        + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?pageSize=" + pageSize;
+
+    // Configure mock API service to respond to API call
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess("<channels/>", MediaType.APPLICATION_XML));
+
+    // Perform the test
+    ChannelsResource channelsResource = this.apiClient.getMyChannels(firstPageCriteria);
+
+    this.mockReportingApiService.verify();
+    assertThat(channelsResource, notNullValue());
+    assertThat(channelsResource.getChannels(), hasSize(0));
+    assertThat(channelsResource.getLinks(), hasSize(0));
+  }
+
+  /**
    * Tests {@link SpringApiClientImpl#getMyChannels} when the first page of returned resources contains multiple
    * channels, and the total no. of channels is greater than the API page size, resulting in a 'next' page link.
    * 
@@ -249,7 +274,7 @@ public class SpringApiClientImplIntegrationTest {
     int pageSize = 50;
     String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -489,7 +514,7 @@ public class SpringApiClientImplIntegrationTest {
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?subscribed=" + subscribed + "&subscribedSince="
         + subscribedSinceAsString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -531,7 +556,7 @@ public class SpringApiClientImplIntegrationTest {
         + ChannelSubscribersResource.RELATIVE_URI_TEMPLATE + "?unsubscribedSince=" + unsubscribedSinceAsString
         + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -679,7 +704,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody =
@@ -728,7 +753,7 @@ public class SpringApiClientImplIntegrationTest {
         + SubscribersWebcastActivityResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(null, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody =
@@ -776,7 +801,7 @@ public class SpringApiClientImplIntegrationTest {
         + SubscribersWebcastActivityResource.FOR_CHANNEL_RELATIVE_URI_TEMPLATE + "?since=" + sinceString
         + "&expand=channelSurveyResponse&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(null, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody =
@@ -996,7 +1021,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri()
         + SurveyResponsesResource.RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&cursor=1234";
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(surveyId).toString();
-    PageCriteria pageCriteria = new PageCriteria(NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(null, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -1096,7 +1121,7 @@ public class SpringApiClientImplIntegrationTest {
     String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE
         + "?since=" + sinceString + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody = new ClassPathResource(
@@ -1239,7 +1264,7 @@ public class SpringApiClientImplIntegrationTest {
         + WebcastRegistrationsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&viewed="
         + viewed + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody =
@@ -1372,7 +1397,7 @@ public class SpringApiClientImplIntegrationTest {
         + WebcastViewingsResource.FOR_WEBCAST_RELATIVE_URI_TEMPLATE + "?since=" + sinceString + "&webcastStatus="
         + webcastStatus.toString() + "&cursor=1234&pageSize=" + pageSize;
     String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId, webcastId).toString();
-    PageCriteria pageCriteria = new PageCriteria(pageSize, NextPageUrl.parse(expectedRequestUrl));
+    PageCriteria pageCriteria = createPageCriteria(pageSize, expectedRequestUrl);
 
     // Configure mock API service to respond to API call with a canned collection of API resources read from file
     Resource responseBody =
@@ -1398,6 +1423,10 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastViewingsResource.getWebcastViewings().get(0), is(expectedWebcastViewingResource));
 
     assertThat(webcastViewingsResource.getLinks(), hasSize(0));
+  }
+
+  private static PageCriteria createPageCriteria(Integer pageSize, String nextPageUrl) {
+    return new PageCriteria(pageSize, new Link(nextPageUrl, LinkRelationType.next.name()));
   }
 
   private static String apiErrorToXml(ApiError apiError) {
