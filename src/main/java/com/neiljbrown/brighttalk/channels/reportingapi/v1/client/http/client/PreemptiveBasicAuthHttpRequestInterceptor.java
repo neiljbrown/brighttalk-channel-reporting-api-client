@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of {@link HttpRequestInterceptor} which when added to an HttpClient ensures that requests are sent
- * with any basic authentication credentials with a matching auth scope that are registered with the client's
- * credentials provider, rather than waiting for an authentication challenge from the server. This improves efficiency
- * of the HTTP client by avoiding an extra handshake (request/response cycle), with sacrificing security.
+ * An implementation of {@link HttpRequestInterceptor} which ensures that any basic authentication credentials that are
+ * registered with the HttpClient's credentials provider, and have a matching auth scope, are sent in all requests,
+ * rather than waiting for an authentication challenge from the server. This improves efficiency of the HTTP client by
+ * avoiding an extra handshake (request/response cycle), without sacrificing security.
  */
 public class PreemptiveBasicAuthHttpRequestInterceptor implements HttpRequestInterceptor {
 
@@ -37,7 +37,7 @@ public class PreemptiveBasicAuthHttpRequestInterceptor implements HttpRequestInt
   /**
    * {@inheritDoc}
    * <p>
-   * Performs the steps necessary to ensure that all HTTP requests will include basic authentication credentials, if 
+   * Performs the steps necessary to ensure that all HTTP requests will include basic authentication credentials, if
    * some have been previously registered with a matching authentication scope (target host and port).
    */
   @Override
