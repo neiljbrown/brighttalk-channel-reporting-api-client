@@ -128,7 +128,7 @@ public class SpringApiClientImplStubbedApiServiceIntegrationTest {
   }
 
   /**
-   * Tests that the API client takes advantage of the API service's support for HTTP (response) compression by include
+   * Tests that the API client takes advantage of the API service's support for HTTP (response) compression by including
    * HTTP header 'Accept-Encoding: gzip' in its requests.
    */
   @Test

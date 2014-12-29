@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<webcasts>
+  <webcast id="6919">
+    <title>Utilizing Community Marketing to Reach Through the Media Clutter</title>
+    <description>Along with social media, the use of web based marketing has drastically increased over the last 10 years.  At one time an invitation to a webinar was occasional, now many people are bombarded with invitations.  The key to breaking through this clutter is not the “shot gun” approach but something that is effectively focused on the subject matter that matters most to your audience.  This could be new or existing customers, partners, resellers or any other group that makes your business effective.  Community marketing is an effective way to match the right marketing message with the right audience.  
+B Presenter, a consultant to top conferencing companies for over 13 years will show you effective ways to build and effectively engage your communities, leverage existing marketing material content by customizing it for different audiences, and partnering with others in to co-brand your message effectively.</description>
+    <presenter>B Presenter, Principal Consultant, Research Co.</presenter>
+    <duration>2017</duration>
+    <start>2013-08-15T18:00:00Z</start>
+    <keywords>Community Marketing, Webinars and Videos</keywords>
+    <published>true</published>
+    <visibility>public</visibility>
+    <clientBookingRef>campaign-ref-2013-08-05-1</clientBookingRef>
+    <categories>
+      <category>Webinars/Online Event Strategy</category>
+      <category>Webinars/Online Event Insights</category>
+      <category>Webinars/General Marketing</category>
+      <category>Promotion/Featured</category>
+      <category>Webinars/Video Marketing</category>
+      <category>Webinars/Demand Generation</category>
+      <category>Webinars/Content Marketing</category>
+    </categories>
+    <status>recorded</status>
+    <syndicationType>in</syndicationType>
+    <created>2013-03-08T17:06:37Z</created>
+    <lastUpdated>2013-08-15T18:34:49Z</lastUpdated>
+    <link rel="self" href="https://api.test.brighttalk.net/v1/channel/1/webcast/69191"/>
+    <link rel="https://api.brighttalk.com/rel/subscribers_webcast_activity" href="https://api.test.brighttalk.net/v1/channel/1/webcast/69191/subscribers_webcast_activity"/>        
+    <link rel="https://api.brighttalk.com/rel/webcast_registrations" href="https://api.test.brighttalk.net/v1/channel/1/webcast/69191/registrations"/>
+    <link rel="https://api.brighttalk.com/rel/webcast_viewings" href="https://api.test.brighttalk.net/v1/channel/1/webcast/69191/viewings"/>
+  </webcast>  
+</webcasts>

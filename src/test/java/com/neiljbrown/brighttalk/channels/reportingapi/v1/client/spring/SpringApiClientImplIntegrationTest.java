@@ -31,11 +31,15 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ClassPathResource;
@@ -96,6 +100,7 @@ import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Webcas
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastViewingsResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastsResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.support.LinkRelationType;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.support.Links;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -125,6 +130,8 @@ import com.thoughtworks.xstream.XStream;
 // Avoid reuse of injected RestTemplate in later tests as it's configured to use a MockClientHttpRequestFactory
 @DirtiesContext
 public class SpringApiClientImplIntegrationTest {
+
+  private static final Logger logger = LoggerFactory.getLogger(SpringApiClientImplIntegrationTest.class);
 
   /** Instance of class under test */
   @Autowired
@@ -202,14 +209,14 @@ public class SpringApiClientImplIntegrationTest {
   }
 
   /**
-   * Tests an API call, such as {@link SpringApiClientImpl#getMyChannels}, when page criteria is supplied without a 
-   * next page link, i.e. it is criteria for the first page of resources which is only used to specificy a non-default
-   * page size.
+   * Tests an API call, such as {@link SpringApiClientImpl#getMyChannels}, when page criteria is supplied without a next
+   * page link, i.e. it is criteria for the first page of resources which is only used to specificy a non-default page
+   * size.
    */
   @Test
   public void getMyChannelsWhenPageCriteriaSuppliedForFirstPage() {
     int pageSize = 100;
-    PageCriteria firstPageCriteria = new PageCriteria(pageSize);    
+    PageCriteria firstPageCriteria = new PageCriteria(pageSize);
     String expectedRequestUrl = this.apiClient.getApiServiceBaseUri()
         + ChannelsResource.MY_CHANNELS_RELATIVE_URI_TEMPLATE + "?pageSize=" + pageSize;
 
@@ -1144,6 +1151,69 @@ public class SpringApiClientImplIntegrationTest {
     assertThat(webcastsResource.getWebcasts().get(0), is(expectedWebcastResource));
 
     assertThat(webcastsResource.getLinks(), hasSize(0));
+  }
+
+  /**
+   * Tests {@link SpringApiClientImpl#getWebcastsForChannel} when there are multiple {@link WebcastsResource webcasts}
+   * for the channel to be reported, and these are requested and returned across separate pages.
+   * <p>
+   * Primarily written to provide an example of how to use the API client to page through a collection of resources,
+   * using {@link PageCriteria} and the supporting {@link Links} class.
+   */
+  @Test
+  public void getWebcastsForChannelWhenMultiplePagesToRetrieve() {
+    final int channelId = 1;
+    final int pageSize = 1;
+    final Date since = null;
+
+    // Configure mock API service to respond to API call for first page of resources
+    String expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE +
+        "?pageSize=" + pageSize;
+    String expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+    Resource responseBodyPage1 = new ClassPathResource(
+        "SpringApiClientImplTest.getWebcastsForChannelWhenMultiplePages-page1-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBodyPage1, MediaType.APPLICATION_XML));
+
+    // Configure mock API service to respond to API call for second (and final) page of resources
+    expectedTemplateRequestUrl = this.apiClient.getApiServiceBaseUri() + WebcastsResource.RELATIVE_URI_TEMPLATE +
+        "?cursor=5-1376595689&pageSize=" + pageSize;
+    expectedRequestUrl = new UriTemplate(expectedTemplateRequestUrl).expand(channelId).toString();
+    Resource responseBodyPage2 = new ClassPathResource(
+        "SpringApiClientImplTest.getWebcastsForChannelWhenMultiplePages-page2-response.xml", this.getClass());
+    this.mockReportingApiService.expect(method(HttpMethod.GET)).andExpect(requestTo(expectedRequestUrl)).andRespond(
+        withSuccess(responseBodyPage2, MediaType.APPLICATION_XML));
+
+    // Retrieve all pages of resources (until next page link is not present)
+    List<WebcastResource> webcastResources = new ArrayList<>();
+    Link nextPageLink = null;
+    do {
+      if (nextPageLink == null) {
+        logger.debug("Retrieving first page of resources.");
+      } else {
+        logger.debug("Retrieving next page of resources using link [{}].", nextPageLink);
+      }
+
+      WebcastsResource webcastsResource =
+          this.apiClient.getWebcastsForChannel(channelId, since, new PageCriteria(pageSize, nextPageLink));
+
+      if (webcastsResource.getWebcasts().size() > 0) {
+        // One or more resources returned
+
+        // Unwrap returned page of resource collection 'webcasts' to get to member 'webcast'
+        webcastResources.addAll(webcastsResource.getWebcasts());
+
+        // Find optional next page link in last retrieved collection of resources
+        nextPageLink = Links.findNextPageLink(webcastsResource.getLinks());
+      } else if (nextPageLink != null) {
+        logger.warn("Zero resources returned for previously returned next page link [{}]", nextPageLink);
+        nextPageLink = null;
+      }
+    } while (nextPageLink != null);
+
+    this.mockReportingApiService.verify();
+    assertThat(webcastResources, notNullValue());
+    assertThat(webcastResources, hasSize(2));    
   }
 
   /**
