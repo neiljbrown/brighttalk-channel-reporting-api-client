@@ -115,7 +115,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->
         <configuration>
@@ -124,18 +123,16 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <excludes>
-            <!-- Exclude environment specific props files from JAR as they're only templates and get packaged in the zip -->
+            <!-- Exclude environment specific props files from JAR. They're only templates and get packaged in zip -->
             <exclude>brighttalk-channel-reporting-api-v1-client-*.properties</exclude>
           </excludes>
         </configuration>
       </plugin>
       <!-- Generate sources JAR in addition to default classes JAR -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
@@ -147,12 +144,30 @@
       </plugin>
       <!-- Generate javadoc JAR in addition to default classes JAR -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <executions>
           <execution>
             <goals>
               <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Assemble the 'binary' distribution -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptor>src/assembly/binary.xml</descriptor>
+          <!-- Override default name of artifact. Use a shorter name for distribution which excludes assembly ID 
+          <finalName>${project.name}-${project.version}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          -->
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>

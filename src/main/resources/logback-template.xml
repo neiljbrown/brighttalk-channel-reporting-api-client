@@ -1,11 +1,12 @@
 <!--
  * ********************************************************************************************************************* 
- * Logback logging framework config file used by tests. 
+ * Logback logging framework config file. 
+ * 
+ * An example of the logging config, e.g. loggers, that can be added to a consuming app's logback config 
+ * file to enable log output for the API client in production.    
  * 
  * For help with configuration syntax see the logback manual - http://logback.qos.ch/manual/configuration.html
  * Formatting characters used in patterns are documented in http://logback.qos.ch/manual/layouts.html
- *
- * NOTE - 
  *  
  * *********************************************************************************************************************
 -->
@@ -29,7 +30,7 @@
   </root>
   
   <!-- Logger for BrightTALK Channel owner reporting API client -->
-  <logger name="com.neiljbrown.brighttalk.channels.reportingapi.v1.client" level="DEBUG" additivity="false">
+  <logger name="com.neiljbrown.brighttalk.channels.reportingapi.v1.client" level="INFO" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>      
 
@@ -43,9 +44,5 @@
   <logger name="org.apache.http.wire" level="INFO" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>    
-  
-  <!-- Logger for utilised wiremock (not needed for production, only used for functional testing) -->
-  <logger name="com.github.tomakehurst.wiremock.*" level="INFO" additivity="false">
-    <appender-ref ref="STDOUT" />  
-  </logger>  
+    
 </configuration>
