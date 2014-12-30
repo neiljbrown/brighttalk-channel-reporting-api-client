@@ -8,6 +8,11 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'distribution'
+
+// project.name - Defined in settings.gradle as Gradle defaults it to name of project dir and makes it read-only  
+project.version = '0.0.1-SNAPSHOT'
+project.group = 'com.neiljbrown.brighttalk.channels'
 
 eclipse.classpath.downloadJavadoc = true // defaults to 'false'
 
@@ -44,39 +49,61 @@ dependencies {
 }
 
 jar {
-  baseName = 'brighttalk-channel-reporting-api-v1-client'
-  version =  '0.0.1-SNAPSHOT'
   // Exclude environment specific props files from JAR as they're only templates and get packaged in the zip
   exclude('brighttalk-channel-reporting-api-v1-client-*.properties')  
 }
 
 task sourcesJar(type: Jar) {
-  baseName = "${jar.baseName}"
   classifier 'sources'
   from sourceSets.main.allSource
-  version =  "${jar.version}"      
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-  baseName = "${jar.baseName}"
   classifier = 'javadoc'
   from javadoc.destinationDir
-  version =  "${jar.version}"  
+}
+
+distributions {
+  // Specifies the contents of the binary distribution. (Note - Keep aligned with Maven assembly in pom.xml).
+  bin {
+    // Override default archive name of $project.name-$name to remove '..-bin-..' for consistency with Maven assembly 
+    baseName = "${project.name}" 
+    contents {
+      from 'readme.md'
+      from 'LICENSE.txt'
+      from('src/main/resources') {
+        include '*.properties'
+        include 'logback-template.xml'
+      }              
+      from jar.outputs.files
+      from sourcesJar.outputs.files
+      from javadocJar.outputs.files
+    }
+  }
 }
 
 artifacts {
-  // Extend published artifacts to include source and javadoc JARs as well as default JAR 
+  // Extend artefacts published by install task to include additional ones over and above the default binary/classes JAR 
   archives sourcesJar
-  archives javadocJar
+  archives javadocJar  
+  archives binDistZip
+  archives binDistTar
 }
 
-// Configure Maven plugin's install task with meta-data needed to publish artifact to local Maven repos.
-install {
-  repositories.mavenInstaller {
-    pom.groupId = 'com.neiljbrown.brighttalk.channels'
-    pom.artifactId = "${jar.baseName}"      
-    pom.version = "${jar.version}"
-  }  
+// Customise distZip task for 'zip' distribution
+binDistZip {  
+  // Add name of distribution as suffix to archive name for consistency with Maven assembly plugin
+  classifier = 'bin'
+}
+
+// Customise distTar task for 'bin' distribution
+binDistTar {  
+  // Add name of distribution as suffix to archive name for consistency with Maven assembly plugin
+  classifier = 'bin'
+  // Enable use of compression, to create tgz, rather than plain tar
+  compression = Compression.GZIP
+  // Use extension 'tar.gz' rather than default tgz for consistency with Maven assembly plugin
+  extension = 'tar.gz'
 }
  
 task wrapper(type: Wrapper) {

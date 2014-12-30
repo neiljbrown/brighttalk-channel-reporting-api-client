@@ -7,7 +7,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>brighttalk-channel-owner-reporting-api-v1-client</name>
+  <name>brighttalk-channel-reporting-api-v1-client</name>
   <description>Client for version 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>
   <url>https://bitbucket.org/neilbrown</url>
 

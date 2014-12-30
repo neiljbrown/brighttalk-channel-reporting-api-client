@@ -9,14 +9,22 @@
   <!-- The binary distribution comprises the pre-compiled API client - primarily the compiled classes JAR (along with supporting 
     JARs containing packaged source and generated javadoc for convenience), as well as supporting config (e.g. props) files. 
     (Excludes test classes and any non-Java source code i.e. /src/test/resources, etc) -->
+  <!-- NOTE: Keep aligned with build.gradle -->
   <fileSets>
+    <fileSet>
+      <directory>${basedir}</directory>
+      <includes>
+        <include>readme.md</include>
+        <include>LICENSE.txt</include>
+      </includes>
+    </fileSet>
     <fileSet>
       <directory>target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>*.jar</include>
       </includes>
-    </fileSet>
+    </fileSet>        
     <fileSet>
       <directory>src/main/resources</directory>
       <includes>
@@ -24,13 +32,6 @@
         <include>logback-template.xml</include>
       </includes>
       <outputDirectory>/</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${basedir}</directory>
-      <includes>
-        <include>readme.md</include>
-        <include>LICENSE.txt</include>
-      </includes>
     </fileSet>
   </fileSets>
 </assembly>
