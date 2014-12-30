@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 /**
- * Root package containing the definition of the API client's public interface and classes which can be used by any / 
- * all implementations of the API client. (Classes which are specific to a particular implementation of an API client 
- * can be found in sub-packages).   
+ * Root package containing the definition of the API client's public interface - 
+ * {@link com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiClient} and referenced classes which are 
+ * common to all implementations.
+ * <p> 
+ * Classes which are specific to a particular implementation of the API client can be found in sub-packages, e.g. 
+ * 'spring' for the Spring framework implementation.
  */
 package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
