@@ -116,6 +116,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.2</version>        
         <!-- Override Maven default of Java 5 source/runtime support, to allow use of newer language features -->
         <configuration>
           <source>${java.version}</source>
@@ -124,6 +125,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>2.5</version>        
         <configuration>
           <excludes>
             <!-- Exclude environment specific props files from JAR. They're only templates and get packaged in zip -->
@@ -134,6 +136,7 @@
       <!-- Generate sources JAR in addition to default classes JAR -->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
+        <version>2.4</version>        
         <executions>
           <execution>
             <goals>
@@ -145,6 +148,7 @@
       <!-- Generate javadoc JAR in addition to default classes JAR -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
         <executions>
           <execution>
             <goals>
