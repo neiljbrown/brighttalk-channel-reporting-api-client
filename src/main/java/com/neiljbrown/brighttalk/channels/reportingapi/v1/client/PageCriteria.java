@@ -17,6 +17,7 @@ package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.NextPageUrl;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Link;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.support.LinkRelationType;
 

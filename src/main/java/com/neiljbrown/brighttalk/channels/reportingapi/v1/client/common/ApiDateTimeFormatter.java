@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
 import java.text.DateFormat;
 import java.text.ParseException;

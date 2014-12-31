@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastStatus;
 
 /**

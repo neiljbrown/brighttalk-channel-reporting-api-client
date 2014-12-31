@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.GetWebcastViewingsRequestParamsBuilder;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.GetWebcastViewingsRequestParamsBuilder;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.WebcastStatus;
 
 /**

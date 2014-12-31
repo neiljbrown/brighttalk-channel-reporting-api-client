@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +21,8 @@ import java.util.Map;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiClient;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 
 /**
  * Builds a map representation of the request parameters supported by the {@link ApiClient#getSurveyResponses Get Survey

@@ -13,29 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
-
 /**
- * An enumeration of request parameter names used to support aspects of paging through collection of API resources.
- * 
- * @author Neil Brown
+ * Package containing classes specific to the internal, common implementation of the API client, which don't have a 
+ * more specific sub-package. The classes are located in this package rather than the root package to provide users 
+ * with a clearer distinction between those classes which form the public interface of the API client and those which 
+ * are used for its common implementation. 
  */
-public enum PagingApiRequestParamName {
-
-  PAGE_SIZE("pageSize"), CURSOR("cursor");
-
-  private String name;
-
-  private PagingApiRequestParamName(String name) {
-    this.name = name;
-  }
-  
-  public String getName() {
-    return this.name;
-  }  
-  
-  @Override
-  public String toString() {
-    return this.name;
-  }
-}
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;

@@ -54,9 +54,9 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiErrorResponseException;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PageCriteria;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.ApiDateTimeFormatter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.marshall.ChannelResourceXStreamConverter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.marshall.ChannelSubscriberResourceXStreamConverter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.marshall.ChannelSubscribersResourceXStreamConverter;

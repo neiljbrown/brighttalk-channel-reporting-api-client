@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.ApiDateTimeFormatter;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.ApiDateTimeFormatter;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.ChannelResource;
 import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.resource.Link;
 import com.thoughtworks.xstream.converters.Converter;

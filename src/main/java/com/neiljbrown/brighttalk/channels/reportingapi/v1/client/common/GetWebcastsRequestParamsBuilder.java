@@ -13,33 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimaps;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PageCriteria;
 
 /**
- * Builds a map representation of the request parameters used to support paging of collection of API resources across
- * API calls from supplied paging data. Also defines the set of named request parameters supporting paging.
+ * Builds a map representation of the request parameters supported by the Get Webcasts APIs from supplied values. Also 
+ * defines the set of named request parameters supported by those APIs.
  * 
  * @author Neil Brown
  */
-public class PagingRequestParamsBuilder {
+public class GetWebcastsRequestParamsBuilder {
 
-  /**
-   * Enumeration of request parameter names used to support aspects of paging through collection of API resources.
-   * <p>
-   * Use {@link #getName()} for the literal value of the request parameter name to be used in URLs. 
-   */
+  /* CHECKSTYLE:OFF */
   enum ParamName {
-    PAGE_SIZE("pageSize"), CURSOR("cursor");
+    SINCE("since");
 
     private String name;
 
-    private ParamName(String name) {
+    ParamName(String name) {
       this.name = name;
     }
 
@@ -48,31 +46,36 @@ public class PagingRequestParamsBuilder {
     }
   }
 
+  /* CHECKSTYLE:ON */
+
   // Multimap API uses flattened collection of key/value pairs, with multiple entries for multiple values with same key
   // Multimap.asMap() is subsequently used to convert this to a Map<String, Collection<String>> representation.
   // Use LinkedListMultimap to get reliable (insert) order for keys as well as values
   private LinkedListMultimap<String, String> params = LinkedListMultimap.create();
 
+  private ApiDateTimeFormatter dateFormat = new ApiDateTimeFormatter();
+
   /**
-   * Builds the request parameters from the paging data contained in the supplied {@link PageCriteria} object.
+   * Builds the request parameters using the data from the supplied parameters.
    * 
-   * @param pageCriteria A {@link PageCriteria} object containing the paging data. Can be null.
+   * @param since Optionally filters the results to include only those survey response (created or) updated
+   * after (exclusive) the specified UTC date / time.
+   * @param pageCriteria Optional {@link PageCriteria page criteria}.
    */
-  public PagingRequestParamsBuilder(PageCriteria pageCriteria) {
-    if (pageCriteria == null) {
-      return;
+  public GetWebcastsRequestParamsBuilder(Date since, PageCriteria pageCriteria) {
+    if (since != null) {
+      this.params.put(ParamName.SINCE.getName(), this.dateFormat.formatAsDateTime(since));
     }
-    if (pageCriteria.getNextPageLink() != null) {
-      NextPageUrl nextPageUrl = NextPageUrl.parse(pageCriteria.getNextPageLink().getHref());
-      this.params.put(ParamName.CURSOR.getName(), nextPageUrl.getCursor());
+    if (pageCriteria != null) {
+      Map<String, List<String>> pagingParams = new PagingRequestParamsBuilder(pageCriteria).asMap();
+      for (String paramName : pagingParams.keySet()) {
+        this.params.putAll(paramName, pagingParams.get(paramName));
+      }
     }
-    if (pageCriteria.getPageSize() != null) {
-      this.params.put(ParamName.PAGE_SIZE.getName(), pageCriteria.getPageSize().toString());
-    }    
   }
 
   /**
-   * @return A {@code Map<String, List<String>>} representation of thee request parameter names and their values.
+   * @return A {@code Map<String, List<String>>} representation of the request parameter names and their values.
    */
   public Map<String, List<String>> asMap() {
     // Multimap's asMap() methods convert

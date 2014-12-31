@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.neiljbrown.brighttalk.channels.reportingapi.v1.client;
+package com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.NextPageUrl;
-import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.PagingRequestParamsBuilder;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.NextPageUrl;
+import com.neiljbrown.brighttalk.channels.reportingapi.v1.client.common.PagingRequestParamsBuilder;
 
 /**
  * Unit tests for {@link NextPageUrl}.
