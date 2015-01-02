@@ -2,7 +2,7 @@
 
 ## Overview
 This project contains the source code for (and releases of) an API client for [BrightTALK's](https://www.brighttalk.com/) 
-[Channel Owner Reporting API](https://www.brighttalk.com/todo).
+Channel Owner Reporting API.
 
 The API client is specified in Java. A production-ready implementation, built using the Spring framework, is also 
 provided.  
@@ -10,10 +10,10 @@ provided.
 The source code is made available under the [Apache License 2.0](http://en.wikipedia.org/wiki/Apache_License). 
 
 ## Downloads
-A 'binary' distribution containing a pre-built copy of the API client is available for [download](http://TODO), in 
-tar.gz and zip formats. The distribution includes a classses JAR, supporting source and javadoc JARs, and the necessary 
+A 'binary' distribution containing a pre-built copy of the API client is available for [download](https://github.com/neiljbrown), 
+in tar.gz and zip formats. The distribution includes a classses JAR, supporting source and javadoc JARs, and the necessary 
 configuration files.   
-
+  
 The JAR files are _not_ currently published to a public repository. Support for this will be added in the future, with a 
 view to streamlining your build process.   
 
@@ -38,10 +38,10 @@ example, to use the native SLF4J binding logback, add the following to your clas
 
 * ch.qos.logback:logback-classic:1.1.2  
 
-## Code / API Docs
-Javadoc is available [online](https://to-do). If you wish to familiarise yourself with the code, good places to start 
-are the [ApiClient](https://to-do) interface and its Spring implementation [SpringApiClientImpl](https://to-do), as well 
-as the tests.
+## API Docs
+If you wish to familiarise yourself with the code, good places to start are the Javadoc for the [ApiClient] interface 
+and its Spring implementation [SpringApiClientImpl]. (Javadoc is currently included in the binary distribution. It 
+will be made available online in the future).
 
 ## Automated Tests
 Unit tests are implemented in JUnit (4) and Hamcrest and can be found in the project's src/test/java folder.
