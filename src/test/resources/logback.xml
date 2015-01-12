@@ -11,7 +11,7 @@
 -->
 <configuration scan="true" scanPeriod="10 seconds" debug="false">
   <!-- Context name distinguishes application in shared log destination. Can be used for syslogtag -->
-  <contextName>btalk-cor-api-v1-client</contextName>
+  <contextName>btalk-cor-api-client</contextName>
 
   <!-- Enable dynamic management of logback config, e.g. log levels, via its JMX interface -->
   <jmxConfigurator />
@@ -29,7 +29,7 @@
   </root>
   
   <!-- Logger for BrightTALK Channel owner reporting API client -->
-  <logger name="com.neiljbrown.brighttalk.channels.reportingapi.v1.client" level="DEBUG" additivity="false">
+  <logger name="com.neiljbrown.brighttalk.channels.reportingapi.client" level="DEBUG" additivity="false">
     <appender-ref ref="STDOUT" />
   </logger>      
 

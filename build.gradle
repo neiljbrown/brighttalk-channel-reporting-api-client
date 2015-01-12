@@ -50,7 +50,7 @@ dependencies {
 
 jar {
   // Exclude environment specific props files from JAR as they're only templates and get packaged in the zip
-  exclude('brighttalk-channel-reporting-api-v1-client-*.properties')  
+  exclude('brighttalk-channel-reporting-api-client-*.properties')  
 }
 
 task sourcesJar(type: Jar) {

@@ -1,7 +1,7 @@
 # BrightTALK Channel Owner Reporting API (V1) Client
 
 ## Overview
-This project contains the source code for (and releases of) an API client for [BrightTALK's](https://www.brighttalk.com/) 
+This project contains the source code and releases of an API client for [BrightTALK's](https://www.brighttalk.com/) 
 Channel Owner Reporting API.
 
 The API client is specified in Java. A production-ready implementation, built using the Spring framework, is also 
@@ -61,9 +61,9 @@ This section outlines the steps to use the Spring implementation of the API clie
 application, after you've downloaded the binaries or built the client from source.
 
 1) Extend your application's build script to declare a compile-time dependency on the API client JAR - 
-brighttalk-channel-reporting-api-v1-client-{release}.jar. Also add the API client's runtime dependencies (see above).
+brighttalk-channel-reporting-api-client-{release}.jar. Also add the API client's runtime dependencies (see above).
 
-2) Copy the API client environment specific property files (brighttalk-channel-reporting-api-v1-client-*.properties) 
+2) Copy the API client environment specific property files (brighttalk-channel-reporting-api-client-*.properties) 
 included in the binary distribution to your project, in a folder (e.g. src/main/resources) that will get deployed with 
 your app and included on the classpath.
 
@@ -82,7 +82,7 @@ classes, e.g.
 <pre>
   @Configuration  
   // Include beans packaged with BrightTALK reporting API client, to get a fully configured instance of ApiClient  
-  @Import(com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.AppConfig.class)  
+  @Import(com.neiljbrown.brighttalk.channels.reportingapi.client.spring.AppConfig.class)  
   ...  
   public class IntegrationConfig {  
     ...  
@@ -97,7 +97,7 @@ If your application uses Spring XML bean config, you can enable processing of Sp
   &lt;!-- Enable processing of Spring annotations such as @Configuration -->
   &lt;context:annotation-config/>
   &lt;!-- Include beans packaged with BrightTALK reporting API client, to get a fully configured instance of ApiClient -->
-  &lt;bean class="com.neiljbrown.brighttalk.channels.reportingapi.v1.client.spring.AppConfig"/>  
+  &lt;bean class="com.neiljbrown.brighttalk.channels.reportingapi.client.spring.AppConfig"/>  
   ...
 &lt;/beans>
 </pre>

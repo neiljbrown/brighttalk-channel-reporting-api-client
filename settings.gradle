@@ -2,4 +2,4 @@
 
 // Explicitly configure project name rather than using Gradle's default (name of project dir) to ensure consistent
 // artifact and distribution file names. Must be set during build init phase, before set and made read-only by Gradle
-rootProject.name = 'brighttalk-channel-reporting-api-v1-client'
+rootProject.name = 'brighttalk-channel-reporting-api-client'

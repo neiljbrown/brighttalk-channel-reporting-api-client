@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.neiljbrown.brighttalk.channels</groupId>
-  <artifactId>brighttalk-channel-reporting-api-v1-client</artifactId>
+  <artifactId>brighttalk-channel-reporting-api-client</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>brighttalk-channel-reporting-api-v1-client</name>
-  <description>Client for version 1.x of BrightTALK's Channel owner reporting APIs, implemented in Java.</description>
-  <url>https://bitbucket.org/neilbrown</url>
+  <name>brighttalk-channel-reporting-api-client</name>
+  <description>Java implementation of API client for BrightTALK's Channel owner reporting APIs.</description>
+  <url>https://github.com/neiljbrown/brighttalk-channel-reporting-api-client</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -129,7 +129,7 @@
         <configuration>
           <excludes>
             <!-- Exclude environment specific props files from JAR. They're only templates and get packaged in zip -->
-            <exclude>brighttalk-channel-reporting-api-v1-client-*.properties</exclude>
+            <exclude>brighttalk-channel-reporting-api-client-*.properties</exclude>
           </excludes>
         </configuration>
       </plugin>
