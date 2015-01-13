@@ -1,4 +1,4 @@
-# BrightTALK Channel Owner Reporting API (V1) Client
+# BrightTALK Channel Owner Reporting API Client
 
 ## Overview
 This project contains the source code and releases of an API client for [BrightTALK's](https://www.brighttalk.com/) 
@@ -10,9 +10,8 @@ provided.
 The source code is made available under the [Apache License 2.0](http://en.wikipedia.org/wiki/Apache_License). 
 
 ## Downloads
-A 'binary' distribution containing a pre-built copy of the API client is available for [download](https://github.com/neiljbrown), 
-in tar.gz and zip formats. The distribution includes a classses JAR, supporting source and javadoc JARs, and the necessary 
-configuration files.   
+A 'binary' distribution of the API client is available for [download](https://github.com/neiljbrown/brighttalk-channel-reporting-api-client/releases) in both tar.gz and zip formats, for each release. The distribution includes a classses JAR, supporting 
+source and javadoc JARs, and the necessary configuration files.   
   
 The JAR files are _not_ currently published to a public repository. Support for this will be added in the future, with a 
 view to streamlining your build process.   
@@ -22,8 +21,11 @@ If you prefer to build the API client yourself, both Maven and Gradle build scri
 build.gradle files in the project's root folder.
 
 ## Runtime Dependencies
-The API client requires a minimum of a Java 7 runtime (JRE) and the minimum versions of the following third-party 
-libraries on the classpath: 
+The API client requires a _minimum_ Java runtime (JRE) version of Java 7. (The API client is written in Java 7 rather 
+than a more recent Java version with a view to supporting a larger install base).
+
+The API client also depeneds on the following _minimum_ versions of third-party libraries being present on the 
+classpath: 
 
 * com.google.guava:guava:16.0.1
 * org.slf4j:slf4j-api:1.7.7
@@ -69,7 +71,7 @@ your app and included on the classpath.
 
 3) Tailor the API client environment specific properties. Currently, the only essential change you need to make 
 is to re-configure the API credentials for your BrightTALK Channel(s), by setting the value of the `apiUser.*` properties. 
-(These credentials can be obtained from [BrightTALK support](support@brighttalk.com)). 
+(These credentials can be obtained from <support@brighttalk.com>). 
 
 4) Releases of the API client ship with Spring bean config that includes a fully configured, singleton instance of the 
 Spring implementation of the API client for use. The Spring bean configuration is Java-based (`@Configuration`), 
@@ -91,7 +93,7 @@ classes, e.g.
 
 If your application uses Spring XML bean config, you can enable processing of Spring annotations using the <tt>&lt;context:annotation-config/></tt> element and include the shipped `@Configuration` class in your Spring XML, e.g.
 <pre>
-&lt!-- One of your Spring bean XML files, e.g. integration-config.xml -->
+&lt;!-- One of your Spring bean XML files, e.g. integration-config.xml -->
 &lt;beans>
   ...
   &lt;!-- Enable processing of Spring annotations such as @Configuration -->
