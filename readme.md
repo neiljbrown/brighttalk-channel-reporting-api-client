@@ -1,5 +1,7 @@
 # BrightTALK Channel Owner Reporting API Client
 
+[![Build Status](https://travis-ci.org/neiljbrown/brighttalk-channel-reporting-api-client.svg?branch=master)](https://travis-ci.org/neiljbrown/brighttalk-channel-reporting-api-client)
+
 ## Overview
 This project contains the source code and releases of an API client for [BrightTALK's](https://www.brighttalk.com/) 
 Channel Owner Reporting API.
