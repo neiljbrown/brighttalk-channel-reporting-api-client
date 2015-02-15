@@ -26,7 +26,7 @@ build.gradle files in the project's root folder.
 The API client requires a _minimum_ Java runtime (JRE) version of Java 7. (The API client is written in Java 7 rather 
 than a more recent Java version with a view to supporting a larger install base).
 
-The API client also depeneds on the following _minimum_ versions of third-party libraries being present on the 
+The API client also depends on the following _minimum_ versions of third-party libraries being present on the 
 classpath: 
 
 * com.google.guava:guava:16.0.1
@@ -67,9 +67,10 @@ application, after you've downloaded the binaries or built the client from sourc
 1) Extend your application's build script to declare a compile-time dependency on the API client JAR - 
 brighttalk-channel-reporting-api-client-{release}.jar. Also add the API client's runtime dependencies (see above).
 
-2) Copy the API client environment specific property files (brighttalk-channel-reporting-api-client-*.properties) 
-included in the binary distribution to your project, in a folder (e.g. src/main/resources) that will get deployed with 
-your app and included on the classpath.
+2) Configure the API client for each of your environments (e.g. stage and production) by creating environment specific 
+property files, following the naming convention brighttalk-channel-reporting-api-client-{environment}.properties, in a 
+folder (e.g. src/main/resources) that will get deployed with your app and included on the classpath. Example property 
+files are included in the binary distribution of the project.
 
 3) Tailor the API client environment specific properties. Currently, the only essential change you need to make 
 is to re-configure the API credentials for your BrightTALK Channel(s), by setting the value of the `apiUser.*` properties. 
@@ -131,6 +132,12 @@ public class BrightTalkChannelReportsDaoImpl implements BrightTalkChannelReports
   ...
 }
 </pre>
+
+6) When running your app, specify the name of the environment which the API client should use for configuration 
+purposes, by setting JVM system property 'environment' to the environment name used in the API client property file, 
+e.g. 
+<pre>java -Denvironment=qa ...</pre> 
+If not specified, the environment will default to 'dev'.
 
 Good luck with building your BrightTALK reporting integration. 
    
